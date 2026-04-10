@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирование — Квартиркинъ</title>
+    <meta name="description" content="Оформление бронирования квартиры в Геленджике.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind Config -->
+    <script src="js/tailwind-config.js"></script>
+    
+    <!-- Стили -->
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/booking.css">
+</head>
+<body class="font-sans antialiased">
+    <div class="noise-overlay"></div>
+    
+    <!-- Навигация -->
+    <nav id="navbar" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-700">
+        <div class="double-bezel">
+            <div class="double-bezel-inner px-6 py-3 flex items-center gap-8">
+                <a href="index.html" class="font-serif text-2xl font-semibold text-sand-800 tracking-tight">Квартиркинъ</a>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="apartments.html" class="nav-link text-sm font-medium text-sand-700 hover:text-sand-900">Квартиры</a>
+                    <a href="index.html#about" class="nav-link text-sm font-medium text-sand-700 hover:text-sand-900">О нас</a>
+                    <a href="index.html#contact" class="nav-link text-sm font-medium text-sand-700 hover:text-sand-900">Контакты</a>
+                </div>
+                <div class="hidden md:flex items-center gap-3 pl-6 border-l border-sand-200">
+                    <a href="auth.html" class="text-sm font-medium text-sand-700 hover:text-sand-900 flex items-center gap-2">
+                        <i class="ph ph-user"></i>
+                        Войти
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center gap-3 pl-6 border-l border-sand-200">
+                    <a href="#" class="w-9 h-9 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 hover:bg-sea-500 hover:text-white transition-all">
+                        <i class="ph ph-telegram-logo text-lg"></i>
+                    </a>
+                    <a href="#" class="w-9 h-9 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 hover:bg-green-500 hover:text-white transition-all">
+                        <i class="ph ph-whatsapp-logo text-lg"></i>
+                    </a>
+                    <a href="#" class="w-9 h-9 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 hover:bg-blue-500 hover:text-white transition-all">
+                        <i class="ph ph-vk-logo text-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Прогресс бронирования -->
+    <section class="pt-32 pb-8 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center justify-center gap-4 reveal">
+                <div class="step-indicator active w-10 h-10 rounded-full border-2 border-sea-500 flex items-center justify-center font-medium text-sm">1</div>
+                <div class="w-16 h-0.5 bg-sand-200"></div>
+                <div class="step-indicator w-10 h-10 rounded-full border-2 border-sand-300 flex items-center justify-center font-medium text-sm text-sand-500">2</div>
+                <div class="w-16 h-0.5 bg-sand-200"></div>
+                <div class="step-indicator w-10 h-10 rounded-full border-2 border-sand-300 flex items-center justify-center font-medium text-sm text-sand-500">3</div>
+            </div>
+            <div class="flex items-center justify-center gap-8 mt-2 text-xs text-sand-500 reveal">
+                <span class="text-sea-600 font-medium">Данные</span>
+                <span>Оплата</span>
+                <span>Подтверждение</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Форма бронирования -->
+    <section class="py-8 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div class="max-w-4xl mx-auto">
+            <div class="grid lg:grid-cols-5 gap-8">
+                <!-- Форма -->
+                <div class="lg:col-span-3 reveal">
+                    <div class="double-bezel">
+                        <div class="double-bezel-inner p-6 sm:p-8">
+                            <h1 class="font-serif text-2xl font-medium text-sand-900 mb-6">Оформление бронирования</h1>
+                            
+                            <form id="booking-form" class="space-y-6">
+                                <!-- Контактные данные -->
+                                <div>
+                                    <h3 class="font-medium text-sand-900 mb-4 flex items-center gap-2">
+                                        <i class="ph ph-user text-sea-500"></i>
+                                        Контактные данные
+                                    </h3>
+                                    <div class="grid sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">Имя *</label>
+                                            <input type="text" required class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">Фамилия *</label>
+                                            <input type="text" required class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">Телефон *</label>
+                                            <input type="tel" required placeholder="+7 (___) ___-__-__" class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">Email *</label>
+                                            <input type="email" required class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Детали поездки -->
+                                <div class="pt-6 border-t border-sand-200">
+                                    <h3 class="font-medium text-sand-900 mb-4 flex items-center gap-2">
+                                        <i class="ph ph-calendar text-sea-500"></i>
+                                        Детали поездки
+                                    </h3>
+                                    <div class="grid sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">Дата заезда *</label>
+                                            <input type="date" required class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">Дата выезда *</label>
+                                            <input type="date" required class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">Количество гостей *</label>
+                                            <select required class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all">
+                                                <option>1 гость</option>
+                                                <option selected>2 гостя</option>
+                                                <option>3 гостя</option>
+                                                <option>4 гостя</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">Время заезда</label>
+                                            <select class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all">
+                                                <option>После 14:00</option>
+                                                <option>14:00</option>
+                                                <option>15:00</option>
+                                                <option>16:00</option>
+                                                <option>17:00</option>
+                                                <option>18:00</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <label class="flex items-center gap-3 cursor-pointer">
+                                            <input type="checkbox" class="rounded text-sea-500 focus:ring-sea-500 w-5 h-5">
+                                            <span class="text-sand-700">Еду с питомцем (+₽500/сутки)</span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <label class="block text-sm text-sand-600 mb-1">Комментарий</label>
+                                        <textarea rows="3" placeholder="Особые пожелания..." class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all resize-none"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <!-- Способ оплаты -->
+                                <div class="pt-6 border-t border-sand-200">
+                                    <h3 class="font-medium text-sand-900 mb-4 flex items-center gap-2">
+                                        <i class="ph ph-credit-card text-sea-500"></i>
+                                        Способ оплаты
+                                    </h3>
+                                    <div class="space-y-3">
+                                        <label class="flex items-center gap-3 p-4 rounded-xl border-2 border-sea-500 bg-sea-50 cursor-pointer transition-all">
+                                            <input type="radio" name="payment" checked class="text-sea-500 focus:ring-sea-500">
+                                            <div class="flex-1">
+                                                <div class="font-medium text-sand-900">Онлайн оплата картой</div>
+                                                <div class="text-sm text-sand-500">Visa, Mastercard, МИР</div>
+                                            </div>
+                                            <i class="ph ph-credit-card text-2xl text-sea-500"></i>
+                                        </label>
+                                        <label class="flex items-center gap-3 p-4 rounded-xl border-2 border-sand-200 hover:border-sand-300 cursor-pointer transition-all">
+                                            <input type="radio" name="payment" class="text-sea-500 focus:ring-sea-500">
+                                            <div class="flex-1">
+                                                <div class="font-medium text-sand-900">СБП (Система быстрых платежей)</div>
+                                                <div class="text-sm text-sand-500">Через любое банковское приложение</div>
+                                            </div>
+                                            <i class="ph ph-bank text-2xl text-sand-400"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Согласие -->
+                                <div class="pt-6 border-t border-sand-200">
+                                    <label class="flex items-start gap-3 cursor-pointer">
+                                        <input type="checkbox" required class="rounded text-sea-500 focus:ring-sea-500 w-5 h-5 mt-0.5">
+                                        <span class="text-sm text-sand-600">Я согласен с <a href="#" class="text-sea-600 hover:underline">правилами проживания</a> и <a href="#" class="text-sea-600 hover:underline">политикой конфиденциальности</a> *</span>
+                                    </label>
+                                </div>
+                                
+                                <button type="submit" class="magnetic-btn w-full py-4 bg-sand-800 text-white rounded-full font-medium hover:bg-sand-900 transition-colors flex items-center justify-center gap-2">
+                                    <span>Перейти к оплате</span>
+                                    <i class="ph ph-arrow-right"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Сводка заказа -->
+                <div class="lg:col-span-2 reveal">
+                    <div class="double-bezel sticky top-32">
+                        <div class="double-bezel-inner p-6">
+                            <h3 class="font-medium text-sand-900 mb-4">Ваше бронирование</h3>
+                            
+                            <div class="flex gap-4 mb-4 pb-4 border-b border-sand-200">
+                                <img src="../apartaments/apartament_1_1.jpg" class="w-20 h-20 rounded-xl object-cover">
+                                <div>
+                                    <h4 class="font-medium text-sand-900 text-sm">Апартаменты «Морской бриз»</h4>
+                                    <p class="text-xs text-sand-500 mt-1">ул. Мира, 15</p>
+                                    <div class="flex items-center gap-1 mt-1 text-yellow-400 text-xs">
+                                        <i class="ph ph-star-fill"></i>
+                                        <span class="text-sand-600">4.9</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-3 mb-4 pb-4 border-b border-sand-200 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-sand-600">Заезд</span>
+                                    <span class="font-medium text-sand-900">15 июня, 14:00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sand-600">Выезд</span>
+                                    <span class="font-medium text-sand-900">18 июня, 12:00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sand-600">Гости</span>
+                                    <span class="font-medium text-sand-900">2 гостя</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sand-600">Ночей</span>
+                                    <span class="font-medium text-sand-900">3</span>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-2 mb-4 pb-4 border-b border-sand-200 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-sand-600">₽4,500 × 3 ночи</span>
+                                    <span class="text-sand-900">₽13,500</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sand-600">Уборка</span>
+                                    <span class="text-sand-900">₽1,500</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sand-600">Сервисный сбор</span>
+                                    <span class="text-sand-900">₽800</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium text-sand-900">Итого</span>
+                                <span class="text-2xl font-semibold text-sand-900">₽15,800</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Футер -->
+    <footer class="py-12 px-4 sm:px-6 lg:px-8 xl:px-12 bg-sand-900 text-white/60 mt-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="font-serif text-2xl font-semibold text-white mb-4">Квартиркинъ</div>
+                    <p class="text-sm">Премиальная посуточная аренда в Геленджике.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-medium mb-4">Навигация</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="index.html" class="hover:text-white">Главная</a></li>
+                        <li><a href="apartments.html" class="hover:text-white">Квартиры</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-medium mb-4">Соцсети</h4>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-sea-500"><i class="ph ph-telegram-logo"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-green-500"><i class="ph ph-whatsapp-logo"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-500"><i class="ph ph-vk-logo"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-white/10 text-sm text-center">© 2024 Квартиркинъ</div>
+        </div>
+    </footer>
+    
+    <!-- Нейро-консультант -->
+    <button id="ai-assistant-btn" class="ai-assistant double-bezel group">
+        <div class="double-bezel-inner w-14 h-14 flex items-center justify-center bg-sea-500 text-white rounded-full hover:bg-sea-600">
+            <i class="ph ph-sparkle text-2xl"></i>
+        </div>
+    </button>
+    
+    <div id="ai-modal" class="fixed inset-0 z-50 modal-overlay opacity-0 pointer-events-none transition-all duration-500 flex items-end sm:items-center justify-end sm:justify-center p-4">
+        <div class="double-bezel w-full max-w-md transform scale-95 opacity-0 transition-all duration-500" id="ai-modal-content">
+            <div class="double-bezel-inner bg-white p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-sea-500 flex items-center justify-center text-white"><i class="ph ph-sparkle text-xl"></i></div>
+                        <div>
+                            <h3 class="font-medium text-sand-900">Нейро-консультант</h3>
+                            <p class="text-xs text-sand-500">Задайте вопрос об аренде</p>
+                        </div>
+                    </div>
+                    <button id="ai-modal-close" class="w-8 h-8 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 hover:bg-sand-200"><i class="ph ph-x"></i></button>
+                </div>
+                <div id="ai-chat-messages" class="h-64 overflow-y-auto space-y-4 mb-4 pr-2">
+                    <div class="flex justify-start">
+                        <div class="max-w-[80%] px-4 py-3 rounded-2xl bg-sand-100 text-sand-800 rounded-bl-md"><p class="text-sm">Здравствуйте! Чем могу помочь с бронированием?</p></div>
+                    </div>
+                </div>
+                <form id="ai-chat-form" class="relative">
+                    <input type="text" id="ai-chat-input" placeholder="Напишите ваш вопрос..." class="w-full px-4 py-3 pr-12 rounded-full bg-sand-100 border-0 focus:ring-2 focus:ring-sea-500 text-sm">
+                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-sea-500 text-white flex items-center justify-center hover:bg-sea-600"><i class="ph ph-paper-plane-right text-sm"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/main.js"></script>
+</body>
+</html>

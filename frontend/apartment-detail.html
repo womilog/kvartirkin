@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Апартаменты «Морской бриз» — Квартиркинъ</title>
+    <meta name="description" content="Подробная информация об апартаментах. Бронирование квартиры в Геленджике.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Yandex Maps -->
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_api_ключ&lang=ru_RU" type="text/javascript"></script>
+    
+    <!-- Tailwind Config -->
+    <script src="js/tailwind-config.js"></script>
+    
+    <!-- Стили -->
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/apartment-detail.css">
+</head>
+<body class="font-sans antialiased">
+    <div class="noise-overlay"></div>
+    
+    <!-- Навигация -->
+    <nav id="navbar" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-700">
+        <div class="double-bezel">
+            <div class="double-bezel-inner px-6 py-3 flex items-center gap-8">
+                <a href="index.html" class="font-serif text-2xl font-semibold text-sand-800 tracking-tight">Квартиркинъ</a>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="apartments.html" class="nav-link text-sm font-medium text-sand-700 hover:text-sand-900">Квартиры</a>
+                    <a href="index.html#about" class="nav-link text-sm font-medium text-sand-700 hover:text-sand-900">О нас</a>
+                    <a href="index.html#contact" class="nav-link text-sm font-medium text-sand-700 hover:text-sand-900">Контакты</a>
+                </div>
+                <div class="hidden md:flex items-center gap-3 pl-6 border-l border-sand-200">
+                    <a href="auth.html" class="text-sm font-medium text-sand-700 hover:text-sand-900 flex items-center gap-2">
+                        <i class="ph ph-user"></i>
+                        Войти
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center gap-3 pl-6 border-l border-sand-200">
+                    <a href="#" class="w-9 h-9 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 hover:bg-sea-500 hover:text-white transition-all">
+                        <i class="ph ph-telegram-logo text-lg"></i>
+                    </a>
+                    <a href="#" class="w-9 h-9 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 hover:bg-green-500 hover:text-white transition-all">
+                        <i class="ph ph-whatsapp-logo text-lg"></i>
+                    </a>
+                    <a href="#" class="w-9 h-9 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 hover:bg-blue-500 hover:text-white transition-all">
+                        <i class="ph ph-vk-logo text-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Хлебные крошки -->
+    <section class="pt-28 pb-4 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center gap-2 text-sm text-sand-600 reveal">
+                <a href="index.html" class="hover:text-sand-900">Главная</a>
+                <i class="ph ph-caret-right text-xs"></i>
+                <a href="apartments.html" class="hover:text-sand-900">Квартиры</a>
+                <i class="ph ph-caret-right text-xs"></i>
+                <span class="text-sand-900">Апартаменты «Морской бриз»</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Основная информация -->
+    <section class="py-8 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Галерея -->
+                <div class="reveal">
+                    <div class="double-bezel mb-4">
+                        <div class="double-bezel-inner overflow-hidden">
+                            <img id="gallery-main" src="../apartaments/apartament_1_1.jpg" alt="Главное фото" class="w-full h-[400px] object-cover transition-opacity duration-300">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <img src="../apartaments/apartament_1_1.jpg" class="gallery-thumb rounded-xl h-20 object-cover ring-2 ring-sea-500" data-full="../apartaments/apartament_1_1.jpg">
+                        <img src="../apartaments/apartament_1_2.jpg" class="gallery-thumb rounded-xl h-20 object-cover" data-full="../apartaments/apartament_1_2.jpg">
+                        <img src="../apartaments/apartament_1_3.jpg" class="gallery-thumb rounded-xl h-20 object-cover" data-full="../apartaments/apartament_1_3.jpg">
+                        <img src="../apartaments/apartament_1_4.jpg" class="gallery-thumb rounded-xl h-20 object-cover" data-full="../apartaments/apartament_1_4.jpg">
+                    </div>
+                </div>
+                
+                <!-- Информация -->
+                <div class="reveal">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="px-3 py-1 rounded-full bg-green-500 text-white text-xs font-medium">Свободна</span>
+                        <span class="px-3 py-1 rounded-full bg-sand-100 text-sand-600 text-xs font-medium flex items-center gap-1">
+                            <i class="ph ph-star-fill text-yellow-400"></i> 4.9 (24 отзыва)
+                        </span>
+                    </div>
+                    
+                    <h1 class="font-serif text-3xl sm:text-4xl font-medium text-sand-900 mb-4">Апартаменты «Морской бриз»</h1>
+                    
+                    <p class="text-sand-600 mb-6 flex items-center gap-2">
+                        <i class="ph ph-map-pin text-sea-500"></i>
+                        ул. Мира, 15 — 300м до моря
+                    </p>
+                    
+                    <div class="grid grid-cols-3 gap-4 mb-8">
+                        <div class="double-bezel">
+                            <div class="double-bezel-inner p-4 text-center">
+                                <i class="ph ph-bed text-2xl text-sea-500 mb-1"></i>
+                                <div class="text-sm text-sand-600">2 комнаты</div>
+                            </div>
+                        </div>
+                        <div class="double-bezel">
+                            <div class="double-bezel-inner p-4 text-center">
+                                <i class="ph ph-ruler text-2xl text-sea-500 mb-1"></i>
+                                <div class="text-sm text-sand-600">45 м²</div>
+                            </div>
+                        </div>
+                        <div class="double-bezel">
+                            <div class="double-bezel-inner p-4 text-center">
+                                <i class="ph ph-users text-2xl text-sea-500 mb-1"></i>
+                                <div class="text-sm text-sand-600">до 4 гостей</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="double-bezel mb-8 sticky top-32">
+                        <div class="double-bezel-inner p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <span class="text-3xl font-semibold text-sand-900">₽4,500</span>
+                                    <span class="text-sand-500">/ сутки</span>
+                                </div>
+                                <input type="hidden" id="price-per-night" value="4500">
+                            </div>
+                            
+                            <form id="booking-form" class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs text-sand-500 mb-1">Заезд</label>
+                                        <input type="date" id="check-in" class="w-full px-3 py-2 rounded-lg bg-sand-100 border-0 text-sm focus:ring-2 focus:ring-sea-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-sand-500 mb-1">Выезд</label>
+                                        <input type="date" id="check-out" class="w-full px-3 py-2 rounded-lg bg-sand-100 border-0 text-sm focus:ring-2 focus:ring-sea-500">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs text-sand-500 mb-1">Гости</label>
+                                    <select id="guests" class="w-full px-3 py-2 rounded-lg bg-sand-100 border-0 text-sm focus:ring-2 focus:ring-sea-500">
+                                        <option>1 гость</option>
+                                        <option selected>2 гостя</option>
+                                        <option>3 гостя</option>
+                                        <option>4 гостя</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" id="pet-checkbox" class="rounded text-sea-500 focus:ring-sea-500">
+                                    <label for="pet-checkbox" class="text-sm text-sand-600">С питомцем (+₽500/сутки)</label>
+                                </div>
+                                
+                                <div class="pt-4 border-t border-sand-200">
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sand-600">Итого:</span>
+                                        <span class="text-xl font-semibold text-sand-900" id="booking-total">₽0</span>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="magnetic-btn w-full py-3 bg-sand-800 text-white rounded-full font-medium hover:bg-sand-900 transition-colors flex items-center justify-center gap-2">
+                                    <span>Забронировать</span>
+                                    <i class="ph ph-arrow-right"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Описание и удобства -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8 xl:px-12 bg-sand-100">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 reveal">
+                    <h2 class="font-serif text-2xl font-medium text-sand-900 mb-4">О квартире</h2>
+                    <div class="prose prose-sand max-w-none text-sand-600 space-y-4">
+                        <p>Просторные двухкомнатные апартаменты в современном жилом комплексе в 300 метрах от моря. Идеально подходят для семейного отдыха или поездки с друзьями.</p>
+                        <p>Квартира полностью оборудована всем необходимым для комфортного проживания: современная кухня с встроенной техникой, удобная мебель, высокоскоростной Wi-Fi, смарт-ТВ с доступом к стриминговым сервисам.</p>
+                        <p>Из окон открывается вид на зелёный двор и частичный вид на море. Рядом находятся магазины, кафе, рестораны и вся необходимая инфраструктура.</p>
+                    </div>
+                    
+                    <h3 class="font-serif text-xl font-medium text-sand-900 mt-8 mb-4">Удобства</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                            <i class="ph ph-wifi-high text-xl text-sea-500"></i>
+                            <span class="text-sm text-sand-700">Wi-Fi</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                            <i class="ph ph-television text-xl text-sea-500"></i>
+                            <span class="text-sm text-sand-700">Smart TV</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                            <i class="ph ph-cooking-pot text-xl text-sea-500"></i>
+                            <span class="text-sm text-sand-700">Кухня</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                            <i class="ph ph-washing-machine text-xl text-sea-500"></i>
+                            <span class="text-sm text-sand-700">Стиральная машина</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                            <i class="ph ph-snowflake text-xl text-sea-500"></i>
+                            <span class="text-sm text-sand-700">Кондиционер</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                            <i class="ph ph-paw-print text-xl text-sea-500"></i>
+                            <span class="text-sm text-sand-700">Можно с питомцем</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Карта -->
+                <div class="reveal">
+                    <h3 class="font-serif text-xl font-medium text-sand-900 mb-4">Расположение</h3>
+                    <div class="double-bezel">
+                        <div class="double-bezel-inner overflow-hidden">
+                            <div id="yandex-map" class="h-64 w-full rounded-[calc(2rem-6px)]"></div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-sand-600 mt-3 flex items-center gap-2">
+                        <i class="ph ph-map-pin text-sea-500"></i>
+                        ул. Мира, 15, Геленджик
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Отзывы -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between mb-8 reveal">
+                <h2 class="font-serif text-2xl font-medium text-sand-900">Отзывы гостей <span class="text-sand-500 text-lg">(24)</span></h2>
+                <button class="px-6 py-2 rounded-full bg-sand-800 text-white text-sm font-medium hover:bg-sand-900 transition-colors">Оставить отзыв</button>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Отзыв 1 -->
+                <div class="double-bezel reveal">
+                    <div class="double-bezel-inner p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-sea-100 flex items-center justify-center text-sea-600 font-medium">АК</div>
+                                <div>
+                                    <div class="font-medium text-sand-900">Анна К.</div>
+                                    <div class="text-xs text-sand-500">июнь 2024</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1 text-yellow-400">
+                                <i class="ph ph-star-fill"></i>
+                                <i class="ph ph-star-fill"></i>
+                                <i class="ph ph-star-fill"></i>
+                                <i class="ph ph-star-fill"></i>
+                                <i class="ph ph-star-fill"></i>
+                            </div>
+                        </div>
+                        <p class="text-sand-600 text-sm leading-relaxed">Отличная квартира! Чисто, уютно, всё как на фото. Хозяева очень приветливые, заселили без проблем. До моря действительно 5 минут ходьбы. Обязательно вернёмся!</p>
+                        <div class="flex items-center gap-4 mt-4 pt-4 border-t border-sand-100">
+                            <button class="comment-like flex items-center gap-1 text-sm text-sand-500 hover:text-sea-500 transition-colors">
+                                <i class="ph ph-heart"></i>
+                                <span class="like-count">12</span>
+                            </button>
+                            <button class="flex items-center gap-1 text-sm text-sand-500 hover:text-sea-500 transition-colors">
+                                <i class="ph ph-chat-circle"></i>
+                                <span>Ответить</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Отзыв 2 -->
+                <div class="double-bezel reveal">
+                    <div class="double-bezel-inner p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-sand-200 flex items-center justify-center text-sand-700 font-medium">МП</div>
+                                <div>
+                                    <div class="font-medium text-sand-900">Михаил П.</div>
+                                    <div class="text-xs text-sand-500">май 2024</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1 text-yellow-400">
+                                <i class="ph ph-star-fill"></i>
+                                <i class="ph ph-star-fill"></i>
+                                <i class="ph ph-star-fill"></i>
+                                <i class="ph ph-star-fill"></i>
+                                <i class="ph ph-star"></i>
+                            </div>
+                        </div>
+                        <p class="text-sand-600 text-sm leading-relaxed">Хорошие апартаменты, всё необходимое есть. Единственный минус — немного шумно вечером с улицы, но это мелочь. В целом рекомендую!</p>
+                        <div class="flex items-center gap-4 mt-4 pt-4 border-t border-sand-100">
+                            <button class="comment-like flex items-center gap-1 text-sm text-sand-500 hover:text-sea-500 transition-colors">
+                                <i class="ph ph-heart"></i>
+                                <span class="like-count">8</span>
+                            </button>
+                            <button class="flex items-center gap-1 text-sm text-sand-500 hover:text-sea-500 transition-colors">
+                                <i class="ph ph-chat-circle"></i>
+                                <span>Ответить</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Похожие квартиры -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8 xl:px-12 bg-sand-100">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="font-serif text-2xl font-medium text-sand-900 mb-8 reveal">Похожие варианты</h2>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="double-bezel reveal">
+                    <div class="double-bezel-inner overflow-hidden">
+                        <img src="../apartaments/apartament_2_1.jpg" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-medium text-sand-900 mb-1">Студия «Солнечная»</h3>
+                            <p class="text-sm text-sand-500 mb-3">пр. Ленина, 42</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold text-sand-900">₽3,200 <span class="text-xs text-sand-500 font-normal">/ сутки</span></span>
+                                <a href="apartment-detail.html?id=2" class="text-sea-500 hover:text-sea-600 text-sm font-medium">Подробнее →</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Футер -->
+    <footer class="py-12 px-4 sm:px-6 lg:px-8 xl:px-12 bg-sand-900 text-white/60">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="font-serif text-2xl font-semibold text-white mb-4">Квартиркинъ</div>
+                    <p class="text-sm">Премиальная посуточная аренда в Геленджике.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-medium mb-4">Навигация</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="index.html" class="hover:text-white">Главная</a></li>
+                        <li><a href="apartments.html" class="hover:text-white">Квартиры</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-medium mb-4">Соцсети</h4>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-sea-500"><i class="ph ph-telegram-logo"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-green-500"><i class="ph ph-whatsapp-logo"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-500"><i class="ph ph-vk-logo"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-white/10 text-sm text-center">© 2024 Квартиркинъ</div>
+        </div>
+    </footer>
+    
+    <!-- Нейро-консультант -->
+    <button id="ai-assistant-btn" class="ai-assistant double-bezel group">
+        <div class="double-bezel-inner w-14 h-14 flex items-center justify-center bg-sea-500 text-white rounded-full hover:bg-sea-600">
+            <i class="ph ph-sparkle text-2xl"></i>
+        </div>
+    </button>
+    
+    <div id="ai-modal" class="fixed inset-0 z-50 modal-overlay opacity-0 pointer-events-none transition-all duration-500 flex items-end sm:items-center justify-end sm:justify-center p-4">
+        <div class="double-bezel w-full max-w-md transform scale-95 opacity-0 transition-all duration-500" id="ai-modal-content">
+            <div class="double-bezel-inner bg-white p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-sea-500 flex items-center justify-center text-white"><i class="ph ph-sparkle text-xl"></i></div>
+                        <div>
+                            <h3 class="font-medium text-sand-900">Нейро-консультант</h3>
+                            <p class="text-xs text-sand-500">Задайте вопрос об аренде</p>
+                        </div>
+                    </div>
+                    <button id="ai-modal-close" class="w-8 h-8 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 hover:bg-sand-200"><i class="ph ph-x"></i></button>
+                </div>
+                <div id="ai-chat-messages" class="h-64 overflow-y-auto space-y-4 mb-4 pr-2">
+                    <div class="flex justify-start">
+                        <div class="max-w-[80%] px-4 py-3 rounded-2xl bg-sand-100 text-sand-800 rounded-bl-md"><p class="text-sm">Здравствуйте! Чем могу помочь?</p></div>
+                    </div>
+                </div>
+                <form id="ai-chat-form" class="relative">
+                    <input type="text" id="ai-chat-input" placeholder="Напишите ваш вопрос..." class="w-full px-4 py-3 pr-12 rounded-full bg-sand-100 border-0 focus:ring-2 focus:ring-sea-500 text-sm">
+                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-sea-500 text-white flex items-center justify-center hover:bg-sea-600"><i class="ph ph-paper-plane-right text-sm"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Kvartirkin.initPhotoGallery();
+            Kvartirkin.calculateBookingTotal();
+            Kvartirkin.initYandexMap([44.572372, 38.072039], 'Апартаменты «Морской бриз»');
+            Kvartirkin.initCommentLikes();
+        });
+    </script>
+</body>
+</html>
