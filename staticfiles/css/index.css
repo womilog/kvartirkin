@@ -1,0 +1,86 @@
+/* ===== Квартиркинъ — Главная страница ===== */
+
+/* Анимация сравнения фото */
+.comparison-slider {
+    position: relative;
+    overflow: hidden;
+    cursor: col-resize;
+}
+
+.comparison-slider img {
+    user-select: none;
+    pointer-events: none;
+}
+
+.comparison-before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.comparison-before img {
+    height: 100%;
+    width: auto;
+    max-width: none;
+}
+
+.comparison-handle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background: white;
+    transform: translateX(-50%);
+    cursor: col-resize;
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.comparison-handle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 48px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.comparison-handle::after {
+    content: '↔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+}
+
+.magnetic-btn .icon-wrapper {
+    transition: all 0.7s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.magnetic-btn:hover .icon-wrapper {
+    transform: translateX(4px) translateY(-1px) scale(1.05);
+}
+
+/* Карусель */
+.carousel-container {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.carousel-item {
+    scroll-snap-align: start;
+}

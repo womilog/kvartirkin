@@ -1,0 +1,17 @@
+/* ===== Квартиркинъ — Бронирование ===== */
+
+.step-indicator {
+    transition: all 0.3s;
+}
+
+.step-indicator.active {
+    background: #3BA8B3;
+    color: white;
+    border-color: #3BA8B3;
+}
+
+.step-indicator.completed {
+    background: #10B981;
+    color: white;
+    border-color: #10B981;
+}

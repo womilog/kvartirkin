@@ -1,0 +1,70 @@
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+from .forms import RegistrationForm, LoginForm
+
+
+def auth_view(request):
+    """Handle both login and registration on the same page."""
+    login_form = LoginForm()
+    register_form = RegistrationForm()
+    active_tab = 'login'
+    login_error = None
+    register_error = None
+
+    if request.method == 'POST':
+        action = request.POST.get('action', 'login')
+
+        if action == 'register':
+            active_tab = 'register'
+            # Преобразуем поля password1/password2 в password/password_confirm
+            post_data = request.POST.copy()
+            if 'password1' in post_data:
+                post_data['password'] = post_data['password1']
+            if 'password2' in post_data:
+                post_data['password_confirm'] = post_data['password2']
+            
+            register_form = RegistrationForm(post_data)
+            if register_form.is_valid():
+                user = register_form.save()
+                login(request, user)
+                return redirect('index')
+            else:
+                # Получаем первую ошибку для отображения
+                errors = []
+                for field_errors in register_form.errors.values():
+                    errors.extend(field_errors)
+                register_error = errors[0] if errors else 'Исправьте ошибки в форме'
+
+        elif action == 'login':
+            active_tab = 'login'
+            # Преобразуем поле phone в username для AuthenticationForm
+            post_data = request.POST.copy()
+            if 'phone' in post_data:
+                post_data['username'] = post_data['phone']
+            
+            login_form = LoginForm(request, data=post_data)
+            if login_form.is_valid():
+                user = login_form.get_user()
+                login(request, user)
+                return redirect('index')
+            else:
+                login_error = 'Неверный телефон или пароль'
+
+    context = {
+        'login_form': login_form,
+        'register_form': register_form,
+        'reg_form': register_form,  # для совместимости с шаблоном
+        'active_tab': active_tab,
+        'login_error': login_error,
+        'register_error': register_error,
+        'show_register': active_tab == 'register',
+    }
+    return render(request, 'auth.html', context)
+
+
+@login_required
+def logout_view(request):
+    """Log out the user."""
+    logout(request)
+    return redirect('index')

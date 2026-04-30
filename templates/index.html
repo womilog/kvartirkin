@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Квартиркинъ — Посуточная аренда в Геленджике{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<!-- Yandex Maps -->
+<script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_api_ключ&lang=ru_RU" type="text/javascript"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="min-h-screen flex items-center pt-32 pb-20 px-4 sm:px-6 lg:px-8 xl:px-12">
+    <div class="max-w-7xl mx-auto w-full">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div class="order-2 lg:order-1 reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sea-50 border border-sea-200 text-sea-700 text-xs font-semibold uppercase tracking-widest mb-6">
+                    <i class="ph ph-house-line"></i>
+                    Геленджик 2024
+                </div>
+                <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl font-medium text-sand-900 leading-[1.1] mb-6">
+                    Ощутите <span class="italic text-sea-600">уют</span> дома<br>у самого моря
+                </h1>
+                <p class="text-lg text-sand-600 leading-relaxed mb-8 max-w-lg">
+                    Премиальные апартаменты для вашего идеального отдыха в Геленджике.
+                    Полностью оборудованные квартиры с продуманным дизайном и видом на море.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="#apartments" class="magnetic-btn group inline-flex items-center gap-3 px-8 py-4 bg-sand-800 text-white rounded-full font-medium text-sm hover:bg-sand-900 transition-colors">
+                        <span>Выбрать квартиру</span>
+                        <span class="icon-wrapper w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                            <i class="ph ph-arrow-right text-sm"></i>
+                        </span>
+                    </a>
+                    <a href="#contact" class="magnetic-btn inline-flex items-center gap-2 px-8 py-4 border-2 border-sand-300 text-sand-700 rounded-full font-medium text-sm hover:border-sand-400 hover:bg-sand-50 transition-all">
+                        <i class="ph ph-phone"></i>
+                        Связаться с нами
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-3 gap-8 mt-12 pt-12 border-t border-sand-200">
+                    <div>
+                        <div class="font-serif text-3xl font-semibold text-sand-800">50+</div>
+                        <div class="text-sm text-sand-500 mt-1">Довольных гостей</div>
+                    </div>
+                    <div>
+                        <div class="font-serif text-3xl font-semibold text-sand-800">{{ apartments|length }}</div>
+                        <div class="text-sm text-sand-500 mt-1">Апартаментов</div>
+                    </div>
+                    <div>
+                        <div class="font-serif text-3xl font-semibold text-sand-800">4.9</div>
+                        <div class="text-sm text-sand-500 mt-1">Рейтинг</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-1 lg:order-2 reveal">
+                <div class="double-bezel">
+                    <div class="double-bezel-inner p-0 overflow-hidden">
+                        <div class="comparison-slider relative h-[400px] sm:h-[500px] lg:h-[600px] rounded-[calc(2rem-6px)]" id="comparison-slider">
+                            <img src="{% static 'photos_animation/2.png' %}" alt="Обставленная квартира" class="w-full h-full object-cover">
+                            <div class="comparison-before" id="comparison-before">
+                                <img src="{% static 'photos_animation/1.jpg' %}" alt="Пустая квартира" class="w-full h-full object-cover">
+                            </div>
+                            <div class="comparison-handle" id="comparison-handle"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center text-sm text-sand-500 mt-4 flex items-center justify-center gap-2">
+                    <i class="ph ph-arrows-left-right"></i>
+                    Перетащите, чтобы увидеть трансформацию
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Available Apartments Carousel -->
+<section id="apartments" class="py-24 px-4 sm:px-6 lg:px-8 xl:px-12 bg-sand-100">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 reveal">
+            <div>
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-sand-200 text-sand-600 text-xs font-semibold uppercase tracking-widest mb-4">
+                    <i class="ph ph-calendar-check"></i>
+                    Свободные даты
+                </div>
+                <h2 class="font-serif text-4xl sm:text-5xl font-medium text-sand-900">
+                    Доступные <span class="italic text-sea-600">сейчас</span>
+                </h2>
+            </div>
+            <a href="{% url 'apartment_list' %}" class="magnetic-btn group inline-flex items-center gap-2 text-sand-700 font-medium hover:text-sand-900 transition-colors">
+                <span>Все квартиры</span>
+                <span class="icon-wrapper"><i class="ph ph-arrow-right"></i></span>
+            </a>
+        </div>
+
+        <div class="carousel-container flex gap-6 overflow-x-auto pb-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 snap-x snap-mandatory reveal">
+            {% for item in apartments %}
+            {% with apartment=item.apartment %}
+            <div class="carousel-item flex-shrink-0 w-[320px] sm:w-[380px]">
+                <div class="double-bezel h-full">
+                    <div class="double-bezel-inner overflow-hidden">
+                        <div class="relative h-56 overflow-hidden">
+                            {% if apartment.main_image %}
+                            <img src="{{ apartment.main_image.image.url }}" alt="{{ apartment.name }}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105">
+                            {% else %}
+                            <img src="{% static 'apartaments/apartament_1_1.jpg' %}" alt="{{ apartment.name }}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105">
+                            {% endif %}
+                            {% if not item.apartment.bookings_enabled %}
+                            <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-gray-500 text-white text-xs font-medium">
+                                Нельзя забронировать
+                            </div>
+                            {% elif item.is_available %}
+                            <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-green-500 text-white text-xs font-medium">
+                                Свободна
+                            </div>
+                            {% else %}
+                            <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-red-500 text-white text-xs font-medium">
+                                Занята
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-start justify-between gap-4 mb-3">
+                                <h3 class="font-serif text-xl font-medium text-sand-900">{{ apartment.name }}</h3>
+                                <div class="text-right">
+                                    <div class="font-semibold text-sand-900">₽{{ apartment.price_per_day|intcomma }}</div>
+                                    <div class="text-xs text-sand-500">/ сутки</div>
+                                </div>
+                            </div>
+                            <p class="text-sm text-sand-600 mb-4 flex items-center gap-1">
+                                <i class="ph ph-map-pin"></i>
+                                {{ apartment.address }}
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">количество комнат: {{ apartment.rooms }}</span>
+                                {% if apartment.has_wifi %}
+                                <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs"><i class="ph ph-wifi-high mr-1"></i>Wi-Fi</span>
+                                {% endif %}
+                                {% if apartment.pets_allowed %}
+                                <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs"><i class="ph ph-paw-print mr-1"></i>Можно с питомцем</span>
+                                {% endif %}
+                            </div>
+                            <a href="{{ apartment.get_absolute_url }}" class="magnetic-btn w-full flex items-center justify-center gap-2 px-6 py-3 bg-sand-800 text-white rounded-full font-medium text-sm hover:bg-sand-900 transition-colors">
+                                <span>Подробнее</span>
+                                <i class="ph ph-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+            {% empty %}
+            <p class="text-sand-600">Пока нет доступных квартир.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- About -->
+<section id="about" class="py-24 px-4 sm:px-6 lg:px-8 xl:px-12">
+    <div class="max-w-7xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sea-50 border border-sea-200 text-sea-700 text-xs font-semibold uppercase tracking-widest mb-6">
+                    <i class="ph ph-info"></i>
+                    О нас
+                </div>
+                <h2 class="font-serif text-4xl sm:text-5xl font-medium text-sand-900 mb-6">
+                    Создаём <span class="italic text-sea-600">идеальное</span><br>пространство для отдыха
+                </h2>
+                <div class="space-y-4 text-sand-600 leading-relaxed">
+                    <p>
+                        Квартиркинъ — это не просто посуточная аренда. Мы создаём атмосферу,
+                        в которой хочется остаться. Каждая квартира обставлена с заботой о вашем комфорте:
+                        от продуманного дизайна до мельчайших деталей быта.
+                    </p>
+                    <p>
+                        Наши апартаменты расположены в лучших районах Геленджика —
+                        в шаговой доступности от моря, парков и основных достопримечательностей города.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mt-8">
+                    <div class="double-bezel">
+                        <div class="double-bezel-inner p-6">
+                            <i class="ph ph-shield-check text-3xl text-sea-600 mb-3"></i>
+                            <h4 class="font-medium text-sand-900 mb-1">Безопасность</h4>
+                            <p class="text-sm text-sand-500">Круглосуточная охрана и видеонаблюдение</p>
+                        </div>
+                    </div>
+                    <div class="double-bezel">
+                        <div class="double-bezel-inner p-6">
+                            <i class="ph ph-sparkle text-3xl text-sea-600 mb-3"></i>
+                            <h4 class="font-medium text-sand-900 mb-1">Чистота</h4>
+                            <p class="text-sm text-sand-500">Профессиональная уборка перед каждым заездом</p>
+                        </div>
+                    </div>
+                    <div class="double-bezel">
+                        <div class="double-bezel-inner p-6">
+                            <i class="ph ph-headset text-3xl text-sea-600 mb-3"></i>
+                            <h4 class="font-medium text-sand-900 mb-1">Поддержка 24/7</h4>
+                            <p class="text-sm text-sand-500">Всегда на связи для решения любых вопросов</p>
+                        </div>
+                    </div>
+                    <div class="double-bezel">
+                        <div class="double-bezel-inner p-6">
+                            <i class="ph ph-heart text-3xl text-sea-600 mb-3"></i>
+                            <h4 class="font-medium text-sand-900 mb-1">С заботой</h4>
+                            <p class="text-sm text-sand-500">Принимаем с детьми и домашними питомцами</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reveal">
+                <div class="relative">
+                    <div class="double-bezel">
+                        <div class="double-bezel-inner overflow-hidden">
+                            <img src="{% static 'apartaments/apartament_1_4.jpg' %}" alt="Интерьер" class="w-full h-[500px] object-cover">
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-8 -left-8 w-48 h-48 double-bezel hidden lg:block">
+                        <div class="double-bezel-inner p-6 flex flex-col items-center justify-center text-center bg-sea-50">
+                            <div class="font-serif text-4xl font-semibold text-sea-600 mb-1">5+</div>
+                            <div class="text-sm text-sand-600">Лет опыта в<br>гостеприимстве</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="py-24 px-4 sm:px-6 lg:px-8 xl:px-12 bg-sand-800 text-white">
+    <div class="max-w-4xl mx-auto text-center reveal">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white/80 text-xs font-semibold uppercase tracking-widest mb-6">
+            <i class="ph ph-chat-circle-text"></i>
+            Контакты
+        </div>
+        <h2 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-medium mb-6">
+            Готовы к <span class="italic text-sea-300">незабываемому</span> отдыху?
+        </h2>
+        <p class="text-lg text-white/70 mb-12 max-w-2xl mx-auto">
+            Свяжитесь с нами удобным способом — мы поможем подобрать идеальные апартаменты
+            и ответим на все ваши вопросы.
+        </p>
+
+        <div class="grid sm:grid-cols-3 gap-6 mb-12">
+            <a href="tel:+79001234567" class="double-bezel group">
+                <div class="double-bezel-inner p-6 bg-white/5 hover:bg-white/10 transition-colors text-center">
+                    <div class="w-14 h-14 rounded-full bg-sea-500 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="ph ph-phone text-2xl text-white"></i>
+                    </div>
+                    <div class="text-sm text-white/60 mb-1">Телефон</div>
+                    <div class="font-medium">+7 (900) 123-45-67</div>
+                </div>
+            </a>
+            <a href="mailto:hello@kvartirkin.ru" class="double-bezel group">
+                <div class="double-bezel-inner p-6 bg-white/5 hover:bg-white/10 transition-colors text-center">
+                    <div class="w-14 h-14 rounded-full bg-sea-500 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <i class="ph ph-envelope text-2xl text-white"></i>
+                    </div>
+                    <div class="text-sm text-white/60 mb-1">Email</div>
+                    <div class="font-medium">hello@kvartirkin.ru</div>
+                </div>
+            </a>
+            <div class="double-bezel">
+                <div class="double-bezel-inner p-6 bg-white/5 text-center">
+                    <div class="w-14 h-14 rounded-full bg-sea-500 flex items-center justify-center mx-auto mb-4">
+                        <i class="ph ph-map-pin text-2xl text-white"></i>
+                    </div>
+                    <div class="text-sm text-white/60 mb-1">Адрес</div>
+                    <div class="font-medium">г. Геленджик, ул. Ленина, 1</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="#" class="magnetic-btn inline-flex items-center gap-3 px-8 py-4 bg-sea-500 text-white rounded-full font-medium hover:bg-sea-400 transition-colors">
+                <i class="ph ph-telegram-logo text-xl"></i>
+                Написать в Telegram
+            </a>
+            <a href="#" class="magnetic-btn inline-flex items-center gap-3 px-8 py-4 bg-white text-sand-800 rounded-full font-medium hover:bg-sand-100 transition-colors">
+                <i class="ph ph-whatsapp-logo text-xl"></i>
+                WhatsApp
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
