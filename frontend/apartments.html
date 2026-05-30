@@ -18,7 +18,7 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
     <!-- Tailwind Config -->
-    <!-- <script src="js/tailwind-config.js"></script> -->
+    <script src="js/tailwind-config.js"></script>
     
     <!-- Стили -->
     <link rel="stylesheet" href="css/common.css">
@@ -100,28 +100,6 @@
         </div>
     </section>
     
-    <!-- Фильтры -->
-    <section class="pb-8 px-4 sm:px-6 lg:px-8 xl:px-12 sticky top-24 z-30">
-        <div class="max-w-7xl mx-auto">
-            <div class="double-bezel reveal">
-                <div class="double-bezel-inner px-4 py-3 flex flex-wrap items-center gap-3 overflow-x-auto">
-                    <button class="filter-btn px-4 py-2 rounded-full bg-sand-800 text-white text-sm font-medium transition-all" data-filter="all">Все</button>
-                    <button class="filter-btn px-4 py-2 rounded-full bg-sand-100 text-sand-700 text-sm font-medium hover:bg-sand-200 transition-all" data-filter="studio">Студии</button>
-                    <button class="filter-btn px-4 py-2 rounded-full bg-sand-100 text-sand-700 text-sm font-medium hover:bg-sand-200 transition-all" data-filter="1room">1-комнатные</button>
-                    <button class="filter-btn px-4 py-2 rounded-full bg-sand-100 text-sand-700 text-sm font-medium hover:bg-sand-200 transition-all" data-filter="2room">2-комнатные</button>
-                    <button class="filter-btn px-4 py-2 rounded-full bg-sand-100 text-sand-700 text-sm font-medium hover:bg-sand-200 transition-all" data-filter="luxury">Люкс</button>
-                    <div class="flex-1"></div>
-                    <select class="px-4 py-2 rounded-full bg-sand-100 text-sand-700 text-sm border-0 focus:ring-2 focus:ring-sea-500">
-                        <option>Сортировка: По популярности</option>
-                        <option>По цене: сначала дешевле</option>
-                        <option>По цене: сначала дороже</option>
-                        <option>По рейтингу</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </section>
-    
     <!-- Сетка квартир -->
     <section class="py-8 px-4 sm:px-6 lg:px-8 xl:px-12">
         <div class="max-w-7xl mx-auto">
@@ -131,14 +109,7 @@
                     <div class="double-bezel h-full">
                         <div class="double-bezel-inner overflow-hidden">
                             <div class="relative h-56 overflow-hidden group">
-                                <img src="../apartaments/apartament_1_1.jpg" alt="Квартира 1" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                                <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-green-500 text-white text-xs font-medium">Свободна</div>
-                                <div class="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/90 backdrop-blur text-sand-800 text-xs font-medium">
-                                    <i class="ph ph-star-fill text-yellow-400 mr-1"></i>4.9
-                                </div>
-                                <button class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-sand-600 hover:text-red-500 transition-colors">
-                                    <i class="ph ph-heart text-xl"></i>
-                                </button>
+                                <img src="media/apartaments/apartament_1_1.jpg" alt="Квартира 1" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             </div>
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4 mb-2">
@@ -178,14 +149,7 @@
                     <div class="double-bezel h-full">
                         <div class="double-bezel-inner overflow-hidden">
                             <div class="relative h-56 overflow-hidden group">
-                                <img src="../apartaments/apartament_2_1.jpg" alt="Квартира 2" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                                <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-yellow-500 text-white text-xs font-medium">С 15 июня</div>
-                                <div class="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/90 backdrop-blur text-sand-800 text-xs font-medium">
-                                    <i class="ph ph-star-fill text-yellow-400 mr-1"></i>5.0
-                                </div>
-                                <button class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-sand-600 hover:text-red-500 transition-colors">
-                                    <i class="ph ph-heart text-xl"></i>
-                                </button>
+                                <img src="media/apartaments/apartament_2_1.jpg" alt="Квартира 2" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             </div>
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4 mb-2">
@@ -225,13 +189,6 @@
                         <div class="double-bezel-inner overflow-hidden">
                             <div class="relative h-56 overflow-hidden group">
                                 <img src="../apartaments/apartament_1_3.jpg" alt="Квартира 3" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                                <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-green-500 text-white text-xs font-medium">Свободна</div>
-                                <div class="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/90 backdrop-blur text-sand-800 text-xs font-medium">
-                                    <i class="ph ph-star-fill text-yellow-400 mr-1"></i>4.8
-                                </div>
-                                <button class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-red-500 transition-colors">
-                                    <i class="ph ph-heart-fill text-xl"></i>
-                                </button>
                             </div>
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4 mb-2">
@@ -272,14 +229,7 @@
                     <div class="double-bezel h-full">
                         <div class="double-bezel-inner overflow-hidden">
                             <div class="relative h-56 overflow-hidden group">
-                                <img src="../apartaments/apartament_1_2.jpg" alt="Квартира 4" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                                <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-red-500 text-white text-xs font-medium">Занята</div>
-                                <div class="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/90 backdrop-blur text-sand-800 text-xs font-medium">
-                                    <i class="ph ph-star-fill text-yellow-400 mr-1"></i>4.7
-                                </div>
-                                <button class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-sand-600 hover:text-red-500 transition-colors">
-                                    <i class="ph ph-heart text-xl"></i>
-                                </button>
+                                <img src="media/apartaments/apartament_1_2.jpg" alt="Квартира 4" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             </div>
                             <div class="p-6">
                                 <div class="flex items-start justify-between gap-4 mb-2">
