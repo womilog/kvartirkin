@@ -7,8 +7,16 @@
     <title>{% block title %}Квартиркинъ — Посуточная аренда в Геленджике{% endblock %}</title>
     <meta name="description" content="{% block description %}Премиальная посуточная аренда квартир в Геленджике. Комфортное проживание у моря.{% endblock %}">
 
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
     <!-- Tailwind Config (inline fix) -->
-    <script>
+    <!-- <script>
         tailwind.config = {
             theme: {
                 extend: {
@@ -50,30 +58,24 @@
                 }
             }
         }
-    </script>
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    </script> -->
 
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <!-- Tailwind Config removed (inlined above) -->
+    <!-- <link rel="stylesheet" href="{% static 'js/tailwind-config.js' %}"> -->
+    <!-- <link rel="stylesheet" href="{% static 'main.js' %}"> -->
 
     <!-- Common Styles -->
     <link rel="stylesheet" href="{% static 'css/common.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<body class="font-sans antialiased">
+<body class="font-sans antialiased bg-sand-50 text-sand-800">
     <div class="noise-overlay"></div>
 
     <!-- Navigation -->
-    <nav id="navbar" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-700">
+    <nav id="navbar" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-700 backdrop-blur-xl bg-white/70 shadow-lg rounded-full">
         <div class="double-bezel">
             <div class="double-bezel-inner px-6 py-3 flex items-center gap-8">
                 <a href="{% url 'index' %}" class="font-serif text-2xl font-semibold text-sand-800 tracking-tight">
@@ -137,10 +139,14 @@
     </div>
 
     <!-- Main Content -->
-    {% block content %}{% endblock %}
+    <main class="pt-32 pb-16 bg-sand-50 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
 
-    <!-- Footer -->
-    <footer class="py-12 px-4 sm:px-6 lg:px-8 xl:px-12 bg-sand-900 text-white/60">
+        <!-- Footer -->
+    <footer class="mt-20 py-14 px-4 sm:px-6 lg:px-8 xl:px-12 bg-gray-950 text-white/60">
         <div class="max-w-7xl mx-auto">
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                 <div>
@@ -244,6 +250,19 @@
     {% endif %}
 
     <script src="{% static 'js/main.js' %}"></script>
+
+    <script>
+        // Автоинициализация skills на всех страницах
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.Kvartirkin) {
+                window.Kvartirkin.initApartmentsFilter();
+                window.Kvartirkin.initCommentLikes();
+                window.Kvartirkin.initPhotoGallery();
+                window.Kvartirkin.calculateBookingTotal();
+            }
+        });
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -1,5 +1,52 @@
 /* ===== Квартиркинъ — Бронирование ===== */
 
+/* Style Django-rendered form fields */
+#id_first_name, #id_last_name, #id_phone,
+#id_check_in, #id_check_out,
+#id_guests, #id_checkin_time, #id_comment {
+    display: block;
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.5rem;
+    background-color: #F9F6F0;
+    border: 1px solid #E5DED0;
+    font-size: 0.875rem;
+    color: #4A4035;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    margin-top: 0.25rem;
+}
+
+#id_first_name:focus, #id_last_name:focus, #id_phone:focus,
+#id_check_in:focus, #id_check_out:focus,
+#id_guests:focus, #id_checkin_time:focus, #id_comment:focus {
+    border-color: #3BA8B3;
+    box-shadow: 0 0 0 3px rgba(59, 168, 179, 0.2);
+}
+
+#id_comment {
+    min-height: 7rem;
+    resize: vertical;
+}
+
+#id_has_pet, #id_agree_terms {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: #3BA8B3;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+}
+
+/* Style label tags from Django */
+label[for^="id_"] {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #8B7A65;
+    margin-bottom: 0.2rem;
+}
+
 .step-indicator {
     transition: all 0.3s;
 }

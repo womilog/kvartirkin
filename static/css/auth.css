@@ -2,11 +2,13 @@
 
 .tab-btn {
     transition: all 0.3s;
+    cursor: pointer;
 }
 
 .tab-btn.active {
     background: #3BA8B3;
-    color: white;
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(59,168,179,0.25);
 }
 
 .form-section {
@@ -18,4 +20,24 @@
 .form-section.active {
     display: block;
     opacity: 1;
+}
+
+/* Auth page input fields */
+#login-phone, #login-password,
+#reg-first-name, #reg-last-name, #reg-phone,
+#reg-password1, #reg-password2 {
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#login-phone:focus, #login-password:focus,
+#reg-first-name:focus, #reg-last-name:focus, #reg-phone:focus,
+#reg-password1:focus, #reg-password2:focus {
+    border-color: #3BA8B3;
+    box-shadow: 0 0 0 3px rgba(59, 168, 179, 0.2);
+    outline: none;
+}
+
+/* Checkbox styling */
+#agree_terms {
+    accent-color: #3BA8B3;
 }

@@ -3,12 +3,53 @@
 .gallery-thumb {
     cursor: pointer;
     transition: all 0.3s;
+    border: 2px solid transparent;
 }
 
 .gallery-thumb:hover {
-    opacity: 0.8;
+    opacity: 0.85;
+    border-color: #5AC0C8;
 }
 
 .gallery-thumb.active {
-    ring: 2px solid #3BA8B3;
+    border-color: #3BA8B3;
+    box-shadow: 0 0 0 2px rgba(59, 168, 179, 0.35);
+    opacity: 1;
+}
+
+/* Booking form inline widget (apartment detail quick-book) */
+#check-in, #check-out {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: #F9F6F0;
+    border: 1px solid #E5DED0;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: #4A4035;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#check-in:focus, #check-out:focus {
+    border-color: #3BA8B3;
+    box-shadow: 0 0 0 3px rgba(59, 168, 179, 0.2);
+}
+
+#guests {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: #F9F6F0;
+    border: 1px solid #E5DED0;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: #4A4035;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#guests:focus {
+    border-color: #3BA8B3;
+    box-shadow: 0 0 0 3px rgba(59, 168, 179, 0.2);
 }

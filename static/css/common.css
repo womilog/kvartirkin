@@ -51,6 +51,12 @@ html {
     transform: scale(0.98);
 }
 
+/* Навигация scrolled state */
+.nav-scrolled {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    background: rgba(255,255,255,0.92) !important;
+}
+
 /* Навигация */
 .nav-link {
     position: relative;
@@ -123,6 +129,32 @@ html {
     background: #B09A80;
 }
 
+/* Primary filled button — ensure always visible */
+.btn-primary {
+    background-color: #266F78;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: #214D54;
+}
+
+/* Ensure Tailwind bg-sand-800 buttons have readable contrast */
+a.bg-sand-800, button.bg-sand-800 {
+    color: #ffffff !important;
+}
+
+a.bg-sand-800:hover, button.bg-sand-800:hover {
+    background-color: #4A4035 !important;
+    color: #ffffff !important;
+}
+
+/* Section visual separator */
+section + section {
+    border-top: 0px;
+}
+
 /* Карточки квартир */
 .apartment-card {
     transition: all 0.7s cubic-bezier(0.32, 0.72, 0, 1);
@@ -141,3 +173,24 @@ html {
     transform: translateY(-2px);
     box-shadow: 0 10px 30px -10px rgba(59, 168, 179, 0.3);
 }
+
+/* ===== Footer distinct from page ===== */
+footer {
+    position: relative;
+}
+
+footer::before {
+    content: '';
+    display: block;
+    height: 4px;
+    background: linear-gradient(90deg, #3BA8B3 0%, #266F78 50%, #3BA8B3 100%);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+/* ===== Improve availability badge contrast ===== */
+.badge-available  { background: #16a34a; color: #fff; }
+.badge-unavailable { background: #dc2626; color: #fff; }
+.badge-disabled   { background: #6b7280; color: #fff; }

@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
     initScrollReveal();
     initNavbar();
     initAIAssistant();
+
+    // Дополнительные skills-функции
+    initPhotoGallery();
+    initApartmentsFilter();
+    initCommentLikes();
+    calculateBookingTotal();
 });
 
 // ===== Слайдер сравнения фото =====
