@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ apartment.name }} — Квартиркинъ{% endblock %}
+{% block description %}{{ apartment.description|truncatewords:20 }}{% endblock %}
+
+{% block extra_head_scripts %}
+    <!-- Yandex Maps -->
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_api_ключ&lang=ru_RU" type="text/javascript"></script>
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/apartment-detail.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <!-- Хлебные крошки -->
+    <section class="pt-28 pb-4 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center gap-2 text-sm text-sand-600 reveal">
+                <a href="{% url 'index' %}" class="hover:text-sand-900">Главная</a>
+                <i class="ph ph-caret-right text-xs"></i>
+                <a href="{% url 'apartment_list' %}" class="hover:text-sand-900">Квартиры</a>
+                <i class="ph ph-caret-right text-xs"></i>
+                <span class="text-sand-900">{{ apartment.name }}</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Основная информация -->
+    <section class="py-8 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-8">
+
+                <!-- Галерея -->
+                <div class="reveal">
+                    <div class="double-bezel mb-4">
+                        <div class="double-bezel-inner overflow-hidden">
+                            {% if images %}
+                                <img id="gallery-main" src="{{ images.0.image.url }}" alt="{{ apartment.name }}"
+                                     class="w-full h-[400px] object-cover transition-opacity duration-300">
+                            {% else %}
+                                <div id="gallery-main-placeholder" class="w-full h-[400px] bg-sand-200 flex items-center justify-center">
+                                    <i class="ph ph-image text-6xl text-sand-400"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if images|length > 1 %}
+                    <div class="grid grid-cols-4 gap-2">
+                        {% for img in images %}
+                        <img src="{{ img.image.url }}"
+                             class="gallery-thumb rounded-xl h-20 w-full object-cover{% if forloop.first %} ring-2 ring-sea-500{% endif %}"
+                             data-full="{{ img.image.url }}"
+                             alt="{{ apartment.name }} фото {{ forloop.counter }}">
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Информация -->
+                <div class="reveal">
+                    <h1 class="font-serif text-3xl sm:text-4xl font-medium text-sand-900 mb-4">{{ apartment.name }}</h1>
+
+                    <p class="text-sand-600 mb-6 flex items-center gap-2">
+                        <i class="ph ph-map-pin text-sea-500"></i>
+                        {{ apartment.address }}{% if apartment.distance_to_sea %} — {{ apartment.distance_to_sea }} до моря{% endif %}
+                    </p>
+
+                    <div class="grid grid-cols-3 gap-4 mb-8">
+                        <div class="double-bezel"><div class="double-bezel-inner p-4 text-center">
+                            <i class="ph ph-bed text-2xl text-sea-500 mb-1"></i>
+                            <div class="text-sm text-sand-600">{{ apartment.rooms }} комн.</div>
+                        </div></div>
+                        <div class="double-bezel"><div class="double-bezel-inner p-4 text-center">
+                            <i class="ph ph-ruler text-2xl text-sea-500 mb-1"></i>
+                            <div class="text-sm text-sand-600">{{ apartment.area }} м²</div>
+                        </div></div>
+                        <div class="double-bezel"><div class="double-bezel-inner p-4 text-center">
+                            <i class="ph ph-users text-2xl text-sea-500 mb-1"></i>
+                            <div class="text-sm text-sand-600">до {{ apartment.max_guests }} гостей</div>
+                        </div></div>
+                    </div>
+
+                    <!-- Форма быстрого расчёта (ведёт на страницу бронирования) -->
+                    <div class="double-bezel mb-8 sticky top-32">
+                        <div class="double-bezel-inner p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <span class="text-3xl font-semibold text-sand-900">₽{{ apartment.price_per_day|floatformat:0 }}</span>
+                                    <span class="text-sand-500">/ сутки</span>
+                                </div>
+                                <input type="hidden" id="price-per-night" value="{{ apartment.price_per_day|floatformat:0 }}">
+                            </div>
+
+                            {% if apartment.can_be_booked %}
+                            <form id="booking-form" action="{% url 'booking' apartment.slug %}" method="get" class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs text-sand-500 mb-1">Заезд</label>
+                                        <input type="date" id="check-in" name="check_in"
+                                               class="w-full px-3 py-2 rounded-lg bg-sand-100 border-0 text-sm focus:ring-2 focus:ring-sea-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-sand-500 mb-1">Выезд</label>
+                                        <input type="date" id="check-out" name="check_out"
+                                               class="w-full px-3 py-2 rounded-lg bg-sand-100 border-0 text-sm focus:ring-2 focus:ring-sea-500">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs text-sand-500 mb-1">Гости</label>
+                                    <select id="guests" name="guests" class="w-full px-3 py-2 rounded-lg bg-sand-100 border-0 text-sm focus:ring-2 focus:ring-sea-500">
+                                        <option value="1">1 гость</option>
+                                        <option value="2" selected>2 гостя</option>
+                                        <option value="3">3 гостя</option>
+                                        <option value="4">4 гостя</option>
+                                        <option value="5">5 гостей</option>
+                                        <option value="6">6 гостей</option>
+                                    </select>
+                                </div>
+
+                                <div class="pt-4 border-t border-sand-200">
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sand-600">Итого:</span>
+                                        <span class="text-xl font-semibold text-sand-900" id="booking-total">₽0</span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="magnetic-btn w-full py-3 bg-sand-800 text-white rounded-full font-medium hover:bg-sand-900 transition-colors flex items-center justify-center gap-2">
+                                    <span>Забронировать</span>
+                                    <i class="ph ph-arrow-right"></i>
+                                </button>
+                            </form>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <div class="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 text-red-600 text-sm font-medium">
+                                    <i class="ph ph-x-circle text-lg"></i>
+                                    Бронирование временно недоступно
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Описание и удобства -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8 xl:px-12 bg-sand-100">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 reveal">
+                    <h2 class="font-serif text-2xl font-medium text-sand-900 mb-4">О квартире</h2>
+                    <div class="prose prose-sand max-w-none text-sand-600 space-y-4">
+                        {{ apartment.description|linebreaksbr }}
+                    </div>
+
+                    <h3 class="font-serif text-xl font-medium text-sand-900 mt-8 mb-4">Удобства</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {% if apartment.has_wifi %}
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                            <i class="ph ph-wifi-high text-xl text-sea-500"></i>
+                            <span class="text-sm text-sand-700">Wi-Fi</span>
+                        </div>
+                        {% endif %}
+                        {% if apartment.has_smart_tv %}
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                            <i class="ph ph-television text-xl text-sea-500"></i>
+                            <span class="text-sm text-sand-700">Smart TV</span>
+                        </div>
+                        {% endif %}
+                        {% if apartment.has_washing_machine %}
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                            <i class="ph ph-washing-machine text-xl text-sea-500"></i>
+                            <span class="text-sm text-sand-700">Стиральная машина</span>
+                        </div>
+                        {% endif %}
+                        {% if apartment.has_ac %}
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                            <i class="ph ph-snowflake text-xl text-sea-500"></i>
+                            <span class="text-sm text-sand-700">Кондиционер</span>
+                        </div>
+                        {% endif %}
+                        {% if apartment.pets_allowed %}
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                            <i class="ph ph-paw-print text-xl text-sea-500"></i>
+                            <span class="text-sm text-sand-700">Можно с питомцем</span>
+                        </div>
+                        {% endif %}
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                            <i class="ph ph-cooking-pot text-xl text-sea-500"></i>
+                            <span class="text-sm text-sand-700">Кухня</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карта -->
+                <div class="reveal">
+                    <h3 class="font-serif text-xl font-medium text-sand-900 mb-4">Расположение</h3>
+                    <div class="double-bezel">
+                        <div class="double-bezel-inner overflow-hidden">
+                            <div id="yandex-map" class="h-64 w-full rounded-[calc(2rem-6px)]"></div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-sand-600 mt-3 flex items-center gap-2">
+                        <i class="ph ph-map-pin text-sea-500"></i>
+                        {{ apartment.address }}, Геленджик
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Отзывы -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between mb-8 reveal">
+                <h2 class="font-serif text-2xl font-medium text-sand-900">
+                    Отзывы гостей
+                    {% if review_count %}<span class="text-sand-500 text-lg">({{ review_count }})</span>{% endif %}
+                    {% if avg_rating %}
+                    <span class="ml-3 text-base font-normal text-yellow-500">
+                        <i class="ph ph-star-fill"></i> {{ avg_rating }}
+                    </span>
+                    {% endif %}
+                </h2>
+            </div>
+
+            {% if reviews %}
+            <div class="grid md:grid-cols-2 gap-6">
+                {% for review in reviews %}
+                <div class="double-bezel reveal">
+                    <div class="double-bezel-inner p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-sea-100 flex items-center justify-center text-sea-600 font-medium text-sm">
+                                    {{ review.user.first_name|first|upper }}{{ review.user.last_name|first|upper }}
+                                </div>
+                                <div>
+                                    <div class="font-medium text-sand-900">{{ review.user.first_name }} {{ review.user.last_name|first }}.</div>
+                                    <div class="text-xs text-sand-500">{{ review.created_at|date:"F Y" }}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-0.5 text-yellow-400">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= review.rating %}
+                                        <i class="ph ph-star-fill"></i>
+                                    {% else %}
+                                        <i class="ph ph-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="text-sand-600 text-sm leading-relaxed">{{ review.text }}</p>
+                        <div class="flex items-center gap-4 mt-4 pt-4 border-t border-sand-100">
+                            <button class="comment-like flex items-center gap-1 text-sm text-sand-500 hover:text-sea-500 transition-colors">
+                                <i class="ph ph-heart"></i>
+                                <span class="like-count">0</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12 text-sand-400 reveal">
+                <i class="ph ph-chat-circle text-5xl mb-3"></i>
+                <p>Отзывов пока нет. Будьте первым!</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Kvartirkin.initPhotoGallery();
+        Kvartirkin.calculateBookingTotal();
+        Kvartirkin.initCommentLikes();
+        // Инициализация Яндекс карты с координатами из БД
+        Kvartirkin.initYandexMap(
+            [{{ apartment.latitude }}, {{ apartment.longitude }}],
+            '{{ apartment.name|escapejs }}'
+        );
+    });
+</script>
+{% endblock %}

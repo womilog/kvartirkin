@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Все квартиры — Квартиркинъ{% endblock %}
+{% block description %}Все доступные квартиры для посуточной аренды в Геленджике.{% endblock %}
+
+{% block content %}
+
+    <!-- Hero секция -->
+    <section class="pt-32 pb-12 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sea-50 border border-sea-200 text-sea-700 text-xs font-semibold uppercase tracking-widest mb-4">
+                    <i class="ph ph-buildings"></i>
+                    Каталог
+                </div>
+                <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-medium text-sand-900 mb-6">
+                    Все <span class="italic text-sea-600">апартаменты</span>
+                </h1>
+                <p class="text-lg text-sand-600 max-w-2xl">
+                    Выберите идеальное жильё для вашего отдыха в Геленджике.
+                    От уютных студий до просторных люксов с видом на море.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Сетка квартир -->
+    <section class="py-8 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for item in apartments %}
+                {% with apt=item.apartment %}
+                <div class="apartment-card reveal">
+                    <div class="double-bezel h-full">
+                        <div class="double-bezel-inner overflow-hidden">
+                            <div class="relative h-56 overflow-hidden group">
+                                {% if apt.main_image %}
+                                    <img src="{{ apt.main_image.image.url }}" alt="{{ apt.name }}"
+                                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                {% else %}
+                                    <div class="w-full h-full bg-sand-200 flex items-center justify-center">
+                                        <i class="ph ph-image text-4xl text-sand-400"></i>
+                                    </div>
+                                {% endif %}
+                                {% if not item.is_available %}
+                                    <div class="absolute top-3 left-3 px-3 py-1 bg-red-500 text-white text-xs font-semibold rounded-full">Занято</div>
+                                {% else %}
+                                    <div class="absolute top-3 left-3 px-3 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">Свободно</div>
+                                {% endif %}
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-start justify-between gap-4 mb-2">
+                                    <h3 class="font-serif text-lg font-medium text-sand-900">{{ apt.name }}</h3>
+                                    <div class="text-right flex-shrink-0">
+                                        <div class="font-semibold text-sand-900">₽{{ apt.price_per_day|floatformat:0 }}</div>
+                                        <div class="text-xs text-sand-500">/ сутки</div>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-sand-600 mb-3 flex items-center gap-1">
+                                    <i class="ph ph-map-pin"></i>
+                                    {{ apt.address }}{% if apt.distance_to_sea %} — {{ apt.distance_to_sea }} до моря{% endif %}
+                                </p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.rooms }} комн.</span>
+                                    <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.area }} м²</span>
+                                    <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">до {{ apt.max_guests }} гостей</span>
+                                </div>
+                                <div class="flex gap-2 mb-4 text-sand-500 text-lg">
+                                    {% if apt.has_wifi %}<i class="ph ph-wifi-high" title="Wi-Fi"></i>{% endif %}
+                                    {% if apt.has_smart_tv %}<i class="ph ph-television" title="Smart TV"></i>{% endif %}
+                                    {% if apt.has_washing_machine %}<i class="ph ph-washing-machine" title="Стиральная машина"></i>{% endif %}
+                                    {% if apt.has_ac %}<i class="ph ph-snowflake" title="Кондиционер"></i>{% endif %}
+                                    {% if apt.pets_allowed %}<i class="ph ph-paw-print" title="Можно с питомцем"></i>{% endif %}
+                                </div>
+                                <a href="{{ apt.get_absolute_url }}" class="magnetic-btn w-full flex items-center justify-center gap-2 px-6 py-3 bg-sand-800 text-white rounded-full font-medium text-sm hover:bg-sand-900 transition-colors">
+                                    <span>Подробнее</span>
+                                    <i class="ph ph-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                {% empty %}
+                <div class="col-span-3 text-center py-16 text-sand-500">
+                    <i class="ph ph-house-simple text-5xl mb-4"></i>
+                    <p class="text-lg">Квартиры не найдены.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

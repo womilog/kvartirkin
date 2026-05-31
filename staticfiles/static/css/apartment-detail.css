@@ -1,0 +1,14 @@
+/* ===== Квартиркинъ — Страница квартиры ===== */
+
+.gallery-thumb {
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.gallery-thumb:hover {
+    opacity: 0.8;
+}
+
+.gallery-thumb.active {
+    ring: 2px solid #3BA8B3;
+}

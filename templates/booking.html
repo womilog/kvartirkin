@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Бронирование — {{ apartment.name }} — Квартиркинъ{% endblock %}
+{% block description %}Оформление бронирования квартиры {{ apartment.name }} в Геленджике.{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/booking.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <!-- Прогресс бронирования -->
+    <section class="pt-32 pb-8 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center justify-center gap-4 reveal">
+                <div class="step-indicator active w-10 h-10 rounded-full border-2 border-sea-500 flex items-center justify-center font-medium text-sm">1</div>
+                <div class="w-16 h-0.5 bg-sand-200"></div>
+                <div class="step-indicator w-10 h-10 rounded-full border-2 border-sand-300 flex items-center justify-center font-medium text-sm text-sand-500">2</div>
+                <div class="w-16 h-0.5 bg-sand-200"></div>
+                <div class="step-indicator w-10 h-10 rounded-full border-2 border-sand-300 flex items-center justify-center font-medium text-sm text-sand-500">3</div>
+            </div>
+            <div class="flex items-center justify-center gap-8 mt-2 text-xs text-sand-500 reveal">
+                <span class="text-sea-600 font-medium">Данные</span>
+                <span>Оплата</span>
+                <span>Подтверждение</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Форма бронирования -->
+    <section class="py-8 px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div class="max-w-4xl mx-auto">
+            <div class="grid lg:grid-cols-5 gap-8">
+
+                <!-- Форма -->
+                <div class="lg:col-span-3 reveal">
+                    <div class="double-bezel">
+                        <div class="double-bezel-inner p-6 sm:p-8">
+                            <h1 class="font-serif text-2xl font-medium text-sand-900 mb-6">Оформление бронирования</h1>
+
+                            {% if messages %}
+                            <div class="mb-6 space-y-2">
+                                {% for message in messages %}
+                                <div class="px-4 py-3 rounded-lg text-sm
+                                    {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200
+                                    {% else %}bg-green-50 text-green-700 border border-green-200{% endif %}">
+                                    {{ message }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            <form id="booking-form" method="post" class="space-y-6" novalidate>
+                                {% csrf_token %}
+
+                                <!-- Контактные данные -->
+                                <div>
+                                    <h3 class="font-medium text-sand-900 mb-4 flex items-center gap-2">
+                                        <i class="ph ph-user text-sea-500"></i>
+                                        Контактные данные
+                                    </h3>
+                                    <div class="grid sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">{{ form.first_name.label }} *</label>
+                                            {{ form.first_name }}
+                                            {% if form.first_name.errors %}<p class="text-xs text-red-500 mt-1">{{ form.first_name.errors.0 }}</p>{% endif %}
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">{{ form.last_name.label }} *</label>
+                                            {{ form.last_name }}
+                                            {% if form.last_name.errors %}<p class="text-xs text-red-500 mt-1">{{ form.last_name.errors.0 }}</p>{% endif %}
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">{{ form.phone.label }} *</label>
+                                            {{ form.phone }}
+                                            {% if form.phone.errors %}<p class="text-xs text-red-500 mt-1">{{ form.phone.errors.0 }}</p>{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Детали поездки -->
+                                <div class="pt-6 border-t border-sand-200">
+                                    <h3 class="font-medium text-sand-900 mb-4 flex items-center gap-2">
+                                        <i class="ph ph-calendar text-sea-500"></i>
+                                        Детали поездки
+                                    </h3>
+                                    <div class="grid sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">{{ form.check_in.label }} *</label>
+                                            {{ form.check_in }}
+                                            {% if form.check_in.errors %}<p class="text-xs text-red-500 mt-1">{{ form.check_in.errors.0 }}</p>{% endif %}
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">{{ form.check_out.label }} *</label>
+                                            {{ form.check_out }}
+                                            {% if form.check_out.errors %}<p class="text-xs text-red-500 mt-1">{{ form.check_out.errors.0 }}</p>{% endif %}
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">{{ form.guests.label }} *</label>
+                                            {{ form.guests }}
+                                            {% if form.guests.errors %}<p class="text-xs text-red-500 mt-1">{{ form.guests.errors.0 }}</p>{% endif %}
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-sand-600 mb-1">{{ form.checkin_time.label }}</label>
+                                            {{ form.checkin_time }}
+                                        </div>
+                                    </div>
+
+                                    {% if apartment.pets_allowed %}
+                                    <div class="mt-4">
+                                        <label class="flex items-center gap-3 cursor-pointer">
+                                            {{ form.has_pet }}
+                                            <span class="text-sand-700">{{ form.has_pet.label }}</span>
+                                        </label>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="mt-4">
+                                        <label class="block text-sm text-sand-600 mb-1">{{ form.comment.label }}</label>
+                                        {{ form.comment }}
+                                    </div>
+                                </div>
+
+                                <!-- Способ оплаты -->
+                                <div class="pt-6 border-t border-sand-200">
+                                    <h3 class="font-medium text-sand-900 mb-4 flex items-center gap-2">
+                                        <i class="ph ph-credit-card text-sea-500"></i>
+                                        Способ оплаты
+                                    </h3>
+                                    <div class="space-y-3">
+                                        <label class="flex items-center gap-3 p-4 rounded-xl border-2 border-sea-500 bg-sea-50 cursor-pointer transition-all">
+                                            <input type="radio" name="payment" checked class="text-sea-500 focus:ring-sea-500">
+                                            <div class="flex-1">
+                                                <div class="font-medium text-sand-900">Онлайн оплата картой</div>
+                                                <div class="text-sm text-sand-500">Visa, Mastercard, МИР</div>
+                                            </div>
+                                            <i class="ph ph-credit-card text-2xl text-sea-500"></i>
+                                        </label>
+                                        <label class="flex items-center gap-3 p-4 rounded-xl border-2 border-sand-200 hover:border-sand-300 cursor-pointer transition-all">
+                                            <input type="radio" name="payment" class="text-sea-500 focus:ring-sea-500">
+                                            <div class="flex-1">
+                                                <div class="font-medium text-sand-900">СБП (Система быстрых платежей)</div>
+                                                <div class="text-sm text-sand-500">Через любое банковское приложение</div>
+                                            </div>
+                                            <i class="ph ph-bank text-2xl text-sand-400"></i>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Согласие -->
+                                <div class="pt-6 border-t border-sand-200">
+                                    <label class="flex items-start gap-3 cursor-pointer">
+                                        {{ form.agree_terms }}
+                                        <span class="text-sm text-sand-600">
+                                            Я согласен с <a href="#" class="text-sea-600 hover:underline">правилами проживания</a>
+                                            и <a href="#" class="text-sea-600 hover:underline">политикой конфиденциальности</a> *
+                                        </span>
+                                    </label>
+                                    {% if form.agree_terms.errors %}
+                                        <p class="text-xs text-red-500 mt-1">{{ form.agree_terms.errors.0 }}</p>
+                                    {% endif %}
+                                    {% if form.non_field_errors %}
+                                        {% for error in form.non_field_errors %}
+                                        <p class="text-xs text-red-500 mt-2">{{ error }}</p>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+
+                                <button type="submit" class="magnetic-btn w-full py-4 bg-sand-800 text-white rounded-full font-medium hover:bg-sand-900 transition-colors flex items-center justify-center gap-2">
+                                    <span>Отправить заявку</span>
+                                    <i class="ph ph-arrow-right"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Сводка заказа -->
+                <div class="lg:col-span-2 reveal">
+                    <div class="double-bezel sticky top-32">
+                        <div class="double-bezel-inner p-6">
+                            <h3 class="font-medium text-sand-900 mb-4">Ваше бронирование</h3>
+
+                            <div class="flex gap-4 mb-4 pb-4 border-b border-sand-200">
+                                {% if apartment.main_image %}
+                                <img src="{{ apartment.main_image.image.url }}"
+                                     class="w-20 h-20 rounded-xl object-cover flex-shrink-0"
+                                     alt="{{ apartment.name }}">
+                                {% else %}
+                                <div class="w-20 h-20 rounded-xl bg-sand-200 flex items-center justify-center flex-shrink-0">
+                                    <i class="ph ph-image text-2xl text-sand-400"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <h4 class="font-medium text-sand-900 text-sm">{{ apartment.name }}</h4>
+                                    <p class="text-xs text-sand-500 mt-1">{{ apartment.address }}</p>
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <span class="text-xs text-sand-600">{{ apartment.rooms }} комн. · {{ apartment.area }} м²</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 mb-4 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-sand-600">Цена за сутки</span>
+                                    <span class="font-medium text-sand-900">₽{{ apartment.price_per_day|floatformat:0 }}</span>
+                                </div>
+                                {% if apartment.pets_allowed %}
+                                <div class="flex justify-between">
+                                    <span class="text-sand-600">Доп. за питомца</span>
+                                    <span class="font-medium text-sand-900">₽500/сутки</span>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="pt-4 border-t border-sand-200">
+                                <p class="text-xs text-sand-400">Итоговая сумма будет рассчитана после выбора дат</p>
+                            </div>
+
+                            <div class="mt-4 pt-4 border-t border-sand-200">
+                                <a href="{{ apartment.get_absolute_url }}" class="text-sm text-sea-600 hover:underline flex items-center gap-1">
+                                    <i class="ph ph-arrow-left text-xs"></i>
+                                    Назад к описанию
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
