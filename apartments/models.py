@@ -15,6 +15,7 @@ class Apartment(models.Model):
     longitude = models.FloatField('Долгота')
     max_guests = models.PositiveIntegerField('Максимум гостей', default=4)
     distance_to_sea = models.CharField('Расстояние до моря', max_length=100, blank=True)
+    # main_image =
 
     # Amenities
     has_wifi = models.BooleanField('Wi-Fi', default=False)
