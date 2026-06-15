@@ -5,7 +5,10 @@ from django.db.models import Avg
 from django.http import JsonResponse
 from .models import Apartment, Reservation, Review
 from .forms import BookingForm
+import pytz
 
+# utc_zone = pytz.utc
+# moscow_tz = pytz.timezone('Europe/Moscow')
 
 def index(request):
     """Home page — show available apartments carousel."""
@@ -16,9 +19,21 @@ def index(request):
     today = date.today()
     apartments_with_availability = []
     for apt in apartments:
+        res_now = False
+        for res in apt.reservations.all():
+            if res.check_in <= today <= res.check_out :
+                # aware_dt_start = utc_zone.localize(res.check_in)
+                # moscow_time_start = aware_dt_start.astimezone(moscow_tz).strftime('%Y-%m-%d')
+                
+                # aware_dt_end = utc_zone.localize(res.check_out)
+                # moscow_time_end = aware_dt_end.astimezone(moscow_tz).strftime('%Y-%m-%d')
+
+                res_now = f"Занято с {res.check_in.strftime('%m-%d-%Y')} по {res.check_out.strftime('%m-%d-%Y')}"
+
         apartments_with_availability.append({
             'apartment': apt,
             'is_available': apt.get_current_availability(),
+            'res_now' : res_now
         })
     
     context = {

@@ -72,6 +72,10 @@ class RegistrationForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password'])
+        # AbstractUser still has a unique 'username' field even though
+        # USERNAME_FIELD = 'phone'. Set it to the phone number to avoid
+        # UNIQUE constraint failures on repeated registrations.
+        user.username = self.cleaned_data['phone']
         if commit:
             user.save()
         return user

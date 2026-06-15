@@ -118,7 +118,11 @@
                                     </div>
                                 {% endif %}
                                 {% if not item.is_available %}
+                                    {% if item.res_now %}
+                                    <div class="absolute top-3 left-3 px-3 py-1 bg-red-500 text-white text-xs font-semibold rounded-full">{{ item.res_now }}</div>
+                                    {% else %}
                                     <div class="absolute top-3 left-3 px-3 py-1 bg-red-500 text-white text-xs font-semibold rounded-full">Занято</div>
+                                    {% endif %}
                                 {% else %}
                                     <div class="absolute top-3 left-3 px-3 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">Свободно</div>
                                 {% endif %}
