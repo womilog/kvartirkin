@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from .models import Apartment, Reservation, Review
 from .forms import BookingForm
 import pytz
+from django.contrib.auth.decorators import login_required
 
 # utc_zone = pytz.utc
 # moscow_tz = pytz.timezone('Europe/Moscow')
@@ -93,6 +94,7 @@ def apartment_detail(request, slug):
     return render(request, 'apartment_detail.html', context)
 
 
+@login_required
 def booking(request, slug):
     """Booking page for an apartment."""
     apartment = get_object_or_404(Apartment, slug=slug, is_active=True)

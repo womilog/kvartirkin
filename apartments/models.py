@@ -18,11 +18,16 @@ class Apartment(models.Model):
     # main_image =
 
     # Amenities
+    
+     
     has_wifi = models.BooleanField('Wi-Fi', default=False)
     has_smart_tv = models.BooleanField('Smart TV', default=False)
     has_washing_machine = models.BooleanField('Стиральная машина', default=False)
     has_ac = models.BooleanField('Кондиционер', default=False)
     pets_allowed = models.BooleanField('Можно с питомцем', default=False)
+    free_private_park = models.BooleanField("Бесплатная частная парковка", default=False) # new
+    near_pool = models.BooleanField("Открытый бассейн рядом", default=False) # new
+    avaible_smoke = models.BooleanField("Разрешено курить", default=False) # new
 
     is_active = models.BooleanField('Активна', default=True)
     bookings_enabled = models.BooleanField('Бронирование разрешено', default=True)
