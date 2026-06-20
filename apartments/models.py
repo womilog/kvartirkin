@@ -100,9 +100,15 @@ class ApartmentImage(models.Model):
 
 class Reservation(models.Model):
     """Reservation for an apartment."""
+        # The status field is intentionally kept: it drives the request workflow.
+    #   pending   - request submitted, awaiting landlord decision (blocks dates)
+    #   confirmed - landlord approved the request (blocks dates)
+    #   rejected  - landlord declined the request (does NOT block dates)
+    #   cancelled - guest cancelled the request (does NOT block dates)
     STATUS_CHOICES = [
         ('pending', 'Ожидает подтверждения'),
         ('confirmed', 'Подтверждено'),
+        ('rejected', 'Отклонено'),
         ('cancelled', 'Отменено'),
     ]
 

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Бронирование — {{ apartment.name }} — Квартиркинъ{% endblock %}
-{% block description %}Оформление бронирования квартиры {{ apartment.name }} в Геленджике.{% endblock %}
+{% block title %}Заявка на бронирование — {{ apartment.name }} — Квартиркинъ{% endblock %}
+{% block description %}Отправка заявки на бронирование квартиры {{ apartment.name }} в Геленджике.{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/booking.css' %}">
@@ -10,26 +10,8 @@
 
 {% block content %}
 
-    <!-- Прогресс бронирования -->
+    <!-- Форма заявки на бронирование -->
     <section class="pt-32 pb-8 px-4 sm:px-6 lg:px-8 xl:px-12">
-        <div class="max-w-4xl mx-auto">
-            <div class="flex items-center justify-center gap-4 reveal">
-                <div class="step-indicator active w-10 h-10 rounded-full border-2 border-sea-500 flex items-center justify-center font-medium text-sm">1</div>
-                <div class="w-16 h-0.5 bg-sand-200"></div>
-                <div class="step-indicator w-10 h-10 rounded-full border-2 border-sand-300 flex items-center justify-center font-medium text-sm text-sand-500">2</div>
-                <div class="w-16 h-0.5 bg-sand-200"></div>
-                <div class="step-indicator w-10 h-10 rounded-full border-2 border-sand-300 flex items-center justify-center font-medium text-sm text-sand-500">3</div>
-            </div>
-            <div class="flex items-center justify-center gap-8 mt-2 text-xs text-sand-500 reveal">
-                <span class="text-sea-600 font-medium">Данные</span>
-                <span>Оплата</span>
-                <span>Подтверждение</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Форма бронирования -->
-    <section class="py-8 px-4 sm:px-6 lg:px-8 xl:px-12">
         <div class="max-w-4xl mx-auto">
             <div class="grid lg:grid-cols-5 gap-8">
 
@@ -37,7 +19,11 @@
                 <div class="lg:col-span-3 reveal">
                     <div class="double-bezel">
                         <div class="double-bezel-inner p-6 sm:p-8">
-                            <h1 class="font-serif text-2xl font-medium text-sand-900 mb-6">Оформление бронирования</h1>
+                            <h1 class="font-serif text-2xl font-medium text-sand-900 mb-2">Заявка на бронирование</h1>
+                            <p class="text-sm text-sand-600 mb-6">
+                                Оплата на сайте не производится. После отправки заявки администратор
+                                свяжется с вами для подтверждения брони и согласования способа оплаты.
+                            </p>
 
                             {% if messages %}
                             <div class="mb-6 space-y-2">
@@ -85,6 +71,41 @@
                                         <i class="ph ph-calendar text-sea-500"></i>
                                         Детали поездки
                                     </h3>
+
+                                    {% if occupied_ranges %}
+                                    <div id="occupied-info"
+                                         class="mb-4 p-4 rounded-lg border border-amber-200 bg-amber-50">
+                                        <p class="text-sm font-medium text-amber-800 flex items-center gap-2 mb-2">
+                                            <i class="ph ph-warning-circle"></i>
+                                            Эти даты уже заняты — пожалуйста, выберите другие:
+                                        </p>
+                                        <ul class="text-sm text-amber-900 space-y-1 pl-1">
+                                            {% for r in occupied_ranges %}
+                                            <li class="flex items-center gap-2">
+                                                <i class="ph ph-calendar-x text-amber-600"></i>
+                                                <span>
+                                                    с <strong>{{ r.check_in|date:"d.m.Y" }}</strong>
+                                                    по <strong>{{ r.check_out|date:"d.m.Y" }}</strong>
+                                                </span>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% else %}
+                                    <div class="mb-4 p-4 rounded-lg border border-green-200 bg-green-50">
+                                        <p class="text-sm text-green-800 flex items-center gap-2">
+                                            <i class="ph ph-check-circle"></i>
+                                            Все ближайшие даты свободны.
+                                        </p>
+                                    </div>
+                                    {% endif %}
+
+                                    <div id="date-overlap-warning"
+                                         class="hidden mb-4 p-3 rounded-lg border border-red-200 bg-red-50 text-sm text-red-700">
+                                        <i class="ph ph-x-circle"></i>
+                                        Выбранный период пересекается с уже занятыми датами.
+                                    </div>
+
                                     <div class="grid sm:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-sm text-sand-600 mb-1">{{ form.check_in.label }} *</label>
@@ -122,32 +143,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Способ оплаты -->
-                                <div class="pt-6 border-t border-sand-200">
-                                    <h3 class="font-medium text-sand-900 mb-4 flex items-center gap-2">
-                                        <i class="ph ph-credit-card text-sea-500"></i>
-                                        Способ оплаты
-                                    </h3>
-                                    <div class="space-y-3">
-                                        <label class="flex items-center gap-3 p-4 rounded-xl border-2 border-sea-500 bg-sea-50 cursor-pointer transition-all">
-                                            <input type="radio" name="payment" checked class="text-sea-500 focus:ring-sea-500">
-                                            <div class="flex-1">
-                                                <div class="font-medium text-sand-900">Онлайн оплата картой</div>
-                                                <div class="text-sm text-sand-500">Visa, Mastercard, МИР</div>
-                                            </div>
-                                            <i class="ph ph-credit-card text-2xl text-sea-500"></i>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-4 rounded-xl border-2 border-sand-200 hover:border-sand-300 cursor-pointer transition-all">
-                                            <input type="radio" name="payment" class="text-sea-500 focus:ring-sea-500">
-                                            <div class="flex-1">
-                                                <div class="font-medium text-sand-900">СБП (Система быстрых платежей)</div>
-                                                <div class="text-sm text-sand-500">Через любое банковское приложение</div>
-                                            </div>
-                                            <i class="ph ph-bank text-2xl text-sand-400"></i>
-                                        </label>
-                                    </div>
-                                </div>
-
                                 <!-- Согласие -->
                                 <div class="pt-6 border-t border-sand-200">
                                     <label class="flex items-start gap-3 cursor-pointer">
@@ -169,8 +164,12 @@
 
                                 <button type="submit" class="magnetic-btn w-full py-4 bg-sand-800 text-white rounded-full font-medium hover:bg-sand-900 transition-colors flex items-center justify-center gap-2">
                                     <span>Отправить заявку</span>
-                                    <i class="ph ph-arrow-right"></i>
+                                    <i class="ph ph-paper-plane-tilt"></i>
                                 </button>
+                                <p class="text-xs text-sand-500 text-center">
+                                    Нажимая кнопку, вы отправляете заявку администратору.
+                                    Бронирование подтверждается вручную, оплата на сайте не взимается.
+                                </p>
                             </form>
                         </div>
                     </div>
@@ -180,7 +179,7 @@
                 <div class="lg:col-span-2 reveal">
                     <div class="double-bezel sticky top-32">
                         <div class="double-bezel-inner p-6">
-                            <h3 class="font-medium text-sand-900 mb-4">Ваше бронирование</h3>
+                            <h3 class="font-medium text-sand-900 mb-4">Ваша заявка</h3>
 
                             <div class="flex gap-4 mb-4 pb-4 border-b border-sand-200">
                                 {% if apartment.main_image %}
@@ -215,7 +214,11 @@
                             </div>
 
                             <div class="pt-4 border-t border-sand-200">
-                                <p class="text-xs text-sand-400">Итоговая сумма будет рассчитана после выбора дат</p>
+                                <p class="text-xs text-sand-500 leading-relaxed">
+                                    Итоговая сумма будет рассчитана после выбора дат и
+                                    согласована с администратором при подтверждении заявки.
+                                    <strong>Оплата на сайте не взимается.</strong>
+                                </p>
                             </div>
 
                             <div class="mt-4 pt-4 border-t border-sand-200">
@@ -231,5 +234,50 @@
             </div>
         </div>
     </section>
+
+    {{ occupied_ranges_json|json_script:"occupied-ranges-data" }}
+    <script>
+        (function () {
+            const dataEl = document.getElementById('occupied-ranges-data');
+            if (!dataEl) return;
+            let ranges;
+            try {
+                ranges = JSON.parse(dataEl.textContent);
+            } catch (e) {
+                return;
+            }
+            const checkInEl  = document.getElementById('id_check_in');
+            const checkOutEl = document.getElementById('id_check_out');
+            const warningEl  = document.getElementById('date-overlap-warning');
+            if (!checkInEl || !checkOutEl || !warningEl) return;
+
+            // Set the min attribute to today to prevent picking past dates.
+            const today = new Date().toISOString().slice(0, 10);
+            checkInEl.min = today;
+            checkOutEl.min = today;
+
+            function overlaps(aStart, aEnd, bStart, bEnd) {
+                // Half-open intervals: [aStart, aEnd) vs [bStart, bEnd)
+                return aStart < bEnd && aEnd > bStart;
+            }
+
+            function validate() {
+                const ci = checkInEl.value;
+                const co = checkOutEl.value;
+                if (!ci || !co || co <= ci) {
+                    warningEl.classList.add('hidden');
+                    return;
+                }
+                const conflict = ranges.some(r =>
+                    overlaps(ci, co, r.check_in, r.check_out)
+                );
+                warningEl.classList.toggle('hidden', !conflict);
+            }
+
+            checkInEl.addEventListener('change', validate);
+            checkOutEl.addEventListener('change', validate);
+            validate();
+        })();
+    </script>
 
 {% endblock %}

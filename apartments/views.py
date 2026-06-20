@@ -1,12 +1,98 @@
+import logging
 from datetime import date, datetime
-from django.shortcuts import render, redirect, get_object_or_404
+
+from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMultiAlternatives
+from django.db import transaction
 from django.db.models import Avg
 from django.http import JsonResponse
-from .models import Apartment, Reservation, Review
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse
+
 from .forms import BookingForm
-import pytz
-from django.contrib.auth.decorators import login_required
+from .models import Apartment, Reservation, Review
+
+logger = logging.getLogger(__name__)
+
+
+def _send_booking_request_email(reservation, request):
+    """Send a booking request notification to the landlord.
+
+    The email is plain-text by default; if a template exists it is also
+    rendered as HTML. Failures are logged but never block the user flow.
+    """
+    apartment = reservation.apartment
+    subject = (
+        f'Новая заявка на бронирование: {apartment.name} '
+        f'({reservation.check_in:%d.%m.%Y} — {reservation.check_out:%d.%m.%Y})'
+    )
+    admin_url = request.build_absolute_uri(
+        reverse('admin:apartments_reservation_change', args=[reservation.pk])
+    )
+    nights = (reservation.check_out - reservation.check_in).days
+
+    context = {
+        'reservation': reservation,
+        'apartment': apartment,
+        'nights': nights,
+        'admin_url': admin_url,
+    }
+
+    body_lines = [
+        'Поступила новая заявка на бронирование.',
+        '',
+        f'Апартаменты: {apartment.name}',
+        f'Адрес: {apartment.address}',
+        '',
+        f'Заезд:  {reservation.check_in:%d.%m.%Y}',
+        f'Выезд:  {reservation.check_out:%d.%m.%Y}',
+        f'Ночей:  {nights}',
+        f'Гостей: {reservation.guests}'
+        f'{" (с питомцем)" if reservation.has_pet else ""}',
+        '',
+        'Гость:',
+        f'  Имя:     {reservation.first_name} {reservation.last_name}',
+        f'  Телефон: {reservation.phone}',
+    ]
+    if reservation.user_id and getattr(reservation.user, 'email', ''):
+        body_lines.append(f'  Email:   {reservation.user.email}')
+    if reservation.comment:
+        body_lines += ['', 'Комментарий гостя:', reservation.comment]
+    body_lines += [
+        '',
+        f'Ориентировочная стоимость: {reservation.total_price} ₽',
+        '',
+        f'Подтвердить или отклонить заявку: {admin_url}',
+    ]
+    text_body = '\n'.join(body_lines)
+
+    try:
+        msg = EmailMultiAlternatives(
+            subject=subject,
+            body=text_body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[settings.LANDLORD_EMAIL],
+            reply_to=[reservation.user.email] if (
+                reservation.user_id and getattr(reservation.user, 'email', '')
+            ) else None,
+        )
+        # Attach HTML version if a template is provided.
+        try:
+            html_body = render_to_string(
+                'emails/booking_request.html', context
+            )
+            msg.attach_alternative(html_body, 'text/html')
+        except Exception:
+            pass
+        msg.send(fail_silently=False)
+    except Exception as exc:  # noqa: BLE001
+        logger.exception(
+            'Failed to send booking-request email for reservation #%s: %s',
+            reservation.pk, exc,
+        )
 
 # utc_zone = pytz.utc
 # moscow_tz = pytz.timezone('Europe/Moscow')
@@ -104,7 +190,7 @@ def booking(request, slug):
         messages.error(request, 'Бронирование временно недоступно для этих апартаментов.')
         return redirect('apartment_detail', slug=slug)
 
-    # Pre-fill dates from query params
+        # Pre-fill dates from query params
     initial = {}
     check_in = request.GET.get('check_in')
     check_out = request.GET.get('check_out')
@@ -115,45 +201,84 @@ def booking(request, slug):
 
     # Pre-fill user info if logged in
     if request.user.is_authenticated:
-        initial['first_name'] = request.user.first_name
-        initial['last_name'] = request.user.last_name
-        initial['phone'] = request.user.phone
+        initial.setdefault('first_name', request.user.first_name or '')
+        initial.setdefault('last_name', request.user.last_name or '')
+        initial.setdefault('phone', getattr(request.user, 'phone', '') or '')
 
     if request.method == 'POST':
         # Double-check bookings_enabled on POST
         if not apartment.bookings_enabled:
             messages.error(request, 'Бронирование временно недоступно для этих апартаментов.')
             return redirect('apartment_detail', slug=slug)
-            
+
         form = BookingForm(request.POST, apartment=apartment)
         if form.is_valid():
-            reservation = form.save(commit=False)
-            reservation.apartment = apartment
-            if request.user.is_authenticated:
-                reservation.user = request.user
+            # Wrap creation in a transaction so a race-condition double-booking
+            # is prevented at DB level (combined with form.clean overlap check).
+            with transaction.atomic():
+                reservation = form.save(commit=False)
+                reservation.apartment = apartment
+                if request.user.is_authenticated:
+                    reservation.user = request.user
 
-            # Calculate total price
-            nights = (reservation.check_out - reservation.check_in).days
-            price_per_night = apartment.price_per_day
-            if reservation.has_pet:
-                price_per_night += 500  # pet surcharge per day
-            reservation.total_price = nights * price_per_night
-            reservation.save()
+                # Calculate total price
+                nights = (reservation.check_out - reservation.check_in).days
+                price_per_night = apartment.price_per_day
+                if reservation.has_pet:
+                    price_per_night += 500  # pet surcharge per day
+                reservation.total_price = nights * price_per_night
 
-            messages.success(request, 'Бронирование успешно создано!')
+                # Request-based workflow: always start as 'pending'.
+                # Pending reservations already block dates (see model & form).
+                reservation.status = 'pending'
+                reservation.save()
+
+            # Notify the landlord by email (non-blocking on failure).
+            _send_booking_request_email(reservation, request)
+
+            messages.success(
+                request,
+                'Ваша заявка отправлена! Мы свяжемся с вами для подтверждения.',
+            )
             return redirect('booking_success')
         else:
+            # Only surface non-field errors as flash messages — per-field errors
+            # are already shown inline next to the inputs in the template.
             for error in form.non_field_errors():
                 messages.error(request, error)
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f'{error}')
     else:
         form = BookingForm(apartment=apartment, initial=initial)
+
+    # Build the list of currently-blocking reservations so the template can
+    # show the user which dates are already taken. Only reservations whose
+    # check-out is today or later still matter for new bookings.
+    today = date.today()
+    occupied_reservations = apartment.reservations.filter(
+        status__in=['pending', 'confirmed'],
+        check_out__gte=today,
+    ).order_by('check_in').values('check_in', 'check_out')
+
+    occupied_ranges = [
+        {
+            'check_in': r['check_in'],
+            'check_out': r['check_out'],
+        }
+        for r in occupied_reservations
+    ]
+    # JSON-safe version for the small client-side overlap warning.
+    occupied_ranges_json = [
+        {
+            'check_in': r['check_in'].isoformat(),
+            'check_out': r['check_out'].isoformat(),
+        }
+        for r in occupied_ranges
+    ]
 
     context = {
         'apartment': apartment,
         'form': form,
+        'occupied_ranges': occupied_ranges,
+        'occupied_ranges_json': occupied_ranges_json,
     }
     return render(request, 'booking.html', context)
 
