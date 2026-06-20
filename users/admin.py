@@ -8,8 +8,9 @@ from .admin_site import custom_admin_site, CustomModelAdmin
 class CustomUserAdmin(CustomModelAdmin, UserAdmin):
     model = CustomUser
     list_display = ('phone', 'first_name', 'last_name', 'is_staff', 'is_active')
-    list_filter = ('is_staff', 'is_active')
-    search_fields = ('phone', 'first_name', 'last_name')
+    # Override Django's default UserAdmin filters to keep the changelist clean.
+    list_filter = ()
+    search_fields = () # ('phone', 'first_name', 'last_name')
     ordering = ('phone',)
 
     fieldsets = (
