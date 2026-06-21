@@ -105,12 +105,18 @@ class Reservation(models.Model):
     #   confirmed - landlord approved the request (blocks dates)
     #   rejected  - landlord declined the request (does NOT block dates)
     #   cancelled - guest cancelled the request (does NOT block dates)
-    STATUS_CHOICES = [
-        ('pending', 'Ожидает подтверждения'),
-        ('confirmed', 'Подтверждено'),
-        ('rejected', 'Отклонено'),
-        ('cancelled', 'Отменено'),
-    ]
+    class Status(models.TextChoices):
+        PENDING = ('pending', 'Ожидает подтверждения')
+        CONFIRMED = ('confirmed', 'Подтверждено')
+        REGECTED = ('rejected', 'Отклонено')
+        CANCELLED = ('cancelled', 'Отменено')
+    
+    # STATUS_CHOICES = [
+    #     ('pending', 'Ожидает подтверждения'),
+    #     ('confirmed', 'Подтверждено'),
+    #     ('rejected', 'Отклонено'),
+    #     ('cancelled', 'Отменено'),
+    # ]
 
     apartment = models.ForeignKey(
         Apartment,
@@ -140,7 +146,7 @@ class Reservation(models.Model):
     comment = models.TextField('Комментарий', blank=True)
 
     total_price = models.DecimalField('Итого (₽)', max_digits=10, decimal_places=0)
-    status = models.CharField('Статус', max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField('Статус', max_length=20, choices=Status.choices, default='pending') # STATUS_CHOICES
 
     created_at = models.DateTimeField('Создано', auto_now_add=True)
 

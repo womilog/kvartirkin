@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from users.admin_site import custom_admin_site, CustomModelAdmin
 from .models import Apartment, ApartmentImage, Reservation, Review
 
@@ -49,6 +49,7 @@ class ReservationAdmin(CustomModelAdmin):
     list_display = ('apartment', 'first_name', 'last_name', 'phone', 'check_in', 'check_out', 'guests', 'total_price', 'status')
     list_editable = ('status',)
     date_hierarchy = 'check_in'
+    actions = ("set_status_cancel", "set_status_confirm")
 
     fieldsets = (
         ('Апартаменты', {
@@ -64,6 +65,16 @@ class ReservationAdmin(CustomModelAdmin):
             'fields': ('total_price', 'status')
         }),
     )
+
+    @admin.action(description='установка статуса отменено')
+    def set_status_cancel(self, request, queryset):
+        count = queryset.update(status=Reservation.Status.CANCELLED)
+        self.message_user(request, f"Изменено {count} записи(ей).", messages.WARNING)
+    
+    @admin.action(description='установка статуса подтверждено')
+    def set_status_confirm(self, request, queryset):
+        count = queryset.update(status=Reservation.Status.CONFIRMED)
+        self.message_user(request, f"Изменено {count} записи(ей).")
 
 
 @admin.register(Review, site=custom_admin_site)
