@@ -115,7 +115,7 @@ def index(request):
                 # aware_dt_end = utc_zone.localize(res.check_out)
                 # moscow_time_end = aware_dt_end.astimezone(moscow_tz).strftime('%Y-%m-%d')
 
-                res_now = f"Занято с {res.check_in.strftime('%m-%d-%Y')} по {res.check_out.strftime('%m-%d-%Y')}"
+                res_now = f"Занято с {res.check_in.strftime('%d-%m-%Y')} по {res.check_out.strftime('%d-%m-%Y')}"
 
         apartments_with_availability.append({
             'apartment': apt,

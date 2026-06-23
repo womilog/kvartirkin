@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from apartments.models import Reservation
 from .forms import RegistrationForm, LoginForm
 
 
@@ -68,3 +69,19 @@ def logout_view(request):
     """Log out the user."""
     logout(request)
     return redirect('index')
+
+
+@login_required
+def profile_view(request):
+    """Display the user's profile and booking history."""
+    reservations = (
+        Reservation.objects
+        .filter(user=request.user)
+        .select_related('apartment')
+        .order_by('-created_at')
+    )
+    context = {
+        'profile_user': request.user,
+        'reservations': reservations,
+    }
+    return render(request, 'profile.html', context)
