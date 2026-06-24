@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib import messages
 from apartments.models import Reservation
-from .forms import RegistrationForm, LoginForm
+from .forms import RegistrationForm, LoginForm, ProfileEditForm
 
 
 def auth_view(request):
@@ -73,7 +75,33 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-    """Display the user's profile and booking history."""
+    """Display the user's profile, allow editing, and show booking history."""
+    profile_form = ProfileEditForm(instance=request.user)
+    password_form = PasswordChangeForm(user=request.user)
+    # 'info' | 'password' — determines which panel is open after submission
+    active_panel = None
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'edit_profile':
+            profile_form = ProfileEditForm(request.POST, instance=request.user)
+            active_panel = 'info'
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, 'Данные профиля успешно обновлены.')
+                return redirect('profile')
+
+        elif action == 'change_password':
+            password_form = PasswordChangeForm(user=request.user, data=request.POST)
+            active_panel = 'password'
+            if password_form.is_valid():
+                user = password_form.save()
+                # Keep the user logged in after password change
+                update_session_auth_hash(request, user)
+                messages.success(request, 'Пароль успешно изменён.')
+                return redirect('profile')
+
     reservations = (
         Reservation.objects
         .filter(user=request.user)
@@ -83,5 +111,8 @@ def profile_view(request):
     context = {
         'profile_user': request.user,
         'reservations': reservations,
+        'profile_form': profile_form,
+        'password_form': password_form,
+        'active_panel': active_panel,
     }
     return render(request, 'profile.html', context)

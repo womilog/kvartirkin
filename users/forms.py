@@ -81,6 +81,69 @@ class RegistrationForm(forms.ModelForm):
         return user
 
 
+class ProfileEditForm(forms.ModelForm):
+    """Form for editing user profile information."""
+
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'phone', 'email']
+        labels = {
+            'first_name': 'Имя',
+            'last_name': 'Фамилия',
+            'phone': 'Телефон',
+            'email': 'Email',
+        }
+        widgets = {
+            'first_name': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+                'placeholder': 'Имя',
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+                'placeholder': 'Фамилия',
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+                'placeholder': '+7 (___) ___-__-__',
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+                'placeholder': 'you@example.com',
+            }),
+        }
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone', '')
+        digits = re.sub(r'\D', '', phone)
+        if not digits.startswith('7') and not digits.startswith('8'):
+            raise forms.ValidationError('Номер должен начинаться с +7 или 8')
+        if len(digits) != 11:
+            raise forms.ValidationError('Введите корректный номер телефона (11 цифр)')
+        normalized = '+7' + digits[1:]
+        # Ensure phone is not used by another user
+        qs = CustomUser.objects.filter(phone=normalized).exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError('Пользователь с таким номером уже зарегистрирован')
+        return normalized
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not email:
+            return email
+        qs = CustomUser.objects.filter(email__iexact=email).exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError('Этот email уже используется другим аккаунтом')
+        return email
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        # Keep username in sync with phone (AbstractUser still has unique username)
+        user.username = self.cleaned_data['phone']
+        if commit:
+            user.save()
+        return user
+
+
 class LoginForm(AuthenticationForm):
     """Form for user login with phone number."""
     username = forms.CharField(
