@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from .forms import BookingForm
+from .forms import BookingForm, ReviewForm
 from .models import Apartment, Reservation, Review
 
 logger = logging.getLogger(__name__)
@@ -153,6 +153,7 @@ def apartment_detail(request, slug):
     apartment = get_object_or_404(Apartment, slug=slug, is_active=True)
     images = apartment.images.all()
     reviews = apartment.reviews.select_related('user').all()
+    review_form = ReviewForm()
 
     # Calculate average rating
     avg_rating = reviews.aggregate(avg=Avg('rating'))['avg'] or 0
@@ -171,11 +172,12 @@ def apartment_detail(request, slug):
     context = {
         'apartment': apartment,
         'images': images,
-        'reviews': reviews,
+                'reviews': reviews,
         'avg_rating': avg_rating,
         'review_count': reviews.count(),
         'reservations': reservations,
         'is_available': is_available,
+        'review_form': review_form,
     }
     return render(request, 'apartment_detail.html', context)
 
@@ -286,6 +288,62 @@ def booking(request, slug):
 def booking_success(request):
     """Page shown after successful booking."""
     return render(request, 'booking_success.html')
+
+
+@login_required
+def add_review(request, slug):
+    """Create a new review for an apartment.
+
+    Supports both AJAX (returns JSON with rendered HTML) and regular
+    form submission (redirects back to the apartment detail page).
+    """
+    apartment = get_object_or_404(Apartment, slug=slug, is_active=True)
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
+    if request.method != 'POST':
+        if is_ajax:
+            return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+        return redirect('apartment_detail', slug=slug)
+
+    form = ReviewForm(request.POST)
+    if form.is_valid():
+        review = form.save(commit=False)
+        review.apartment = apartment
+        review.user = request.user
+        review.save()
+
+        # Recalculate aggregate rating for the response
+        agg = apartment.reviews.aggregate(avg=Avg('rating'))
+        avg_rating = round(agg['avg'] or 0, 1)
+        review_count = apartment.reviews.count()
+
+        if is_ajax:
+            html = render_to_string(
+                'partials/review_card.html',
+                {'review': review},
+                request=request,
+            )
+            return JsonResponse({
+                'success': True,
+                'html': html,
+                'avg_rating': avg_rating,
+                'review_count': review_count,
+            })
+
+        messages.success(request, 'Спасибо за ваш отзыв!')
+        return redirect('apartment_detail', slug=slug)
+
+    # Invalid form
+    if is_ajax:
+        return JsonResponse({
+            'success': False,
+            'errors': form.errors.get_json_data(),
+        }, status=400)
+
+    for field, errs in form.errors.items():
+        for err in errs:
+            messages.error(request, f'{field}: {err}')
+    return redirect('apartment_detail', slug=slug)
 
 
 def check_availability(request, slug):

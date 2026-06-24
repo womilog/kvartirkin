@@ -1,7 +1,7 @@
 import re
 from datetime import date, timedelta
 from django import forms
-from .models import Reservation
+from .models import Reservation, Review
 
 
 class BookingForm(forms.ModelForm):
@@ -134,10 +134,55 @@ class BookingForm(forms.ModelForm):
             if self.instance.pk:
                 overlapping = overlapping.exclude(pk=self.instance.pk)
 
-            if overlapping.exists():
-                raise forms.ValidationError(
+                if overlapping.exists():
+                    raise forms.ValidationError(
                     'К сожалению, выбранные даты уже заняты. '
                     'Пожалуйста, выберите другие даты.'
                 )
 
         return cleaned_data
+
+
+class ReviewForm(forms.ModelForm):
+    """Form for submitting a review on an apartment."""
+
+    RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
+
+    rating = forms.TypedChoiceField(
+        label='Оценка',
+        choices=RATING_CHOICES,
+        coerce=int,
+        widget=forms.RadioSelect(attrs={'class': 'rating-input'}),
+        error_messages={'required': 'Пожалуйста, выберите оценку'},
+    )
+    text = forms.CharField(
+        label='Текст отзыва',
+        min_length=10,
+        max_length=2000,
+        widget=forms.Textarea(attrs={
+            'rows': 4,
+            'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all resize-none',
+            'placeholder': 'Поделитесь впечатлениями о квартире...',
+        }),
+        error_messages={
+            'required': 'Пожалуйста, напишите текст отзыва',
+            'min_length': 'Отзыв должен быть не короче 10 символов',
+            'max_length': 'Отзыв слишком длинный (максимум 2000 символов)',
+        },
+    )
+
+    class Meta:
+        model = Review
+        fields = ['rating', 'text']
+
+    def clean_rating(self):
+        rating = self.cleaned_data.get('rating')
+        if rating is None or rating < 1 or rating > 5:
+            raise forms.ValidationError('Оценка должна быть от 1 до 5')
+        return rating
+
+    def clean_text(self):
+        text = self.cleaned_data.get('text', '').strip()
+        if not text:
+            raise forms.ValidationError('Текст отзыва не может быть пустым')
+        return text

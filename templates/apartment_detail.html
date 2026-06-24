@@ -229,48 +229,71 @@
                 </h2>
             </div>
 
-            {% if reviews %}
-            <div class="grid md:grid-cols-2 gap-6">
-                {% for review in reviews %}
-                <div class="double-bezel reveal">
-                    <div class="double-bezel-inner p-6">
-                        <div class="flex items-start justify-between mb-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full bg-sea-100 flex items-center justify-center text-sea-600 font-medium text-sm">
-                                    {{ review.user.first_name|first|upper }}{{ review.user.last_name|first|upper }}
-                                </div>
-                                <div>
-                                    <div class="font-medium text-sand-900">{{ review.user.first_name }} {{ review.user.last_name|first }}.</div>
-                                    <div class="text-xs text-sand-500">{{ review.created_at|date:"F Y" }}</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-0.5 text-yellow-400">
+            <!-- Форма добавления отзыва -->
+            {% if user.is_authenticated %}
+            <div class="double-bezel mb-10 reveal">
+                <div class="double-bezel-inner p-6">
+                    <h3 class="font-serif text-xl font-medium text-sand-900 mb-4">Оставить отзыв</h3>
+                    <form id="review-form" method="post"
+                          action="{% url 'add_review' apartment.slug %}"
+                          class="space-y-4">
+                        {% csrf_token %}
+
+                        <div>
+                            <label class="block text-sm font-medium text-sand-700 mb-2">Ваша оценка</label>
+                            <div class="flex items-center gap-2" id="rating-stars">
                                 {% for i in "12345"|make_list %}
-                                    {% if forloop.counter <= review.rating %}
-                                        <i class="ph ph-star-fill"></i>
-                                    {% else %}
-                                        <i class="ph ph-star"></i>
-                                    {% endif %}
+                                <button type="button"
+                                        class="rating-star text-3xl leading-none text-sand-300 transition-colors hover:text-yellow-400 focus:outline-none"
+                                        data-value="{{ forloop.counter }}"
+                                        aria-label="{{ forloop.counter }} звёзд">
+                                    <span aria-hidden="true">&#9733;</span>
+                                </button>
                                 {% endfor %}
                             </div>
+                            <input type="hidden" name="rating" id="rating-input" value="">
+                            <p class="form-error text-sm text-red-600 mt-1 hidden" data-field="rating"></p>
                         </div>
-                        <p class="text-sand-600 text-sm leading-relaxed">{{ review.text }}</p>
-                        <div class="flex items-center gap-4 mt-4 pt-4 border-t border-sand-100">
-                            <button class="comment-like flex items-center gap-1 text-sm text-sand-500 hover:text-sea-500 transition-colors">
-                                <i class="ph ph-heart"></i>
-                                <span class="like-count">0</span>
-                            </button>
+
+                        <div>
+                            <label for="id_text" class="block text-sm font-medium text-sand-700 mb-2">Текст отзыва</label>
+                            {{ review_form.text }}
+                            <p class="form-error text-sm text-red-600 mt-1 hidden" data-field="text"></p>
                         </div>
-                    </div>
+
+                        <p id="review-form-error" class="text-sm text-red-600 hidden"></p>
+                        <p id="review-form-success" class="text-sm text-green-600 hidden">Спасибо за ваш отзыв!</p>
+
+                        <button type="submit"
+                                class="magnetic-btn px-6 py-3 bg-sand-800 text-white rounded-full font-medium hover:bg-sand-900 transition-colors flex items-center gap-2">
+                            <span>Отправить отзыв</span>
+                            <i class="ph ph-paper-plane-right"></i>
+                        </button>
+                    </form>
                 </div>
-                {% endfor %}
             </div>
             {% else %}
-            <div class="text-center py-12 text-sand-400 reveal">
+            <div class="double-bezel mb-10 reveal">
+                <div class="double-bezel-inner p-6 text-center">
+                    <p class="text-sand-600">
+                        Чтобы оставить отзыв,
+                        <a href="{% url 'auth' %}?next={{ request.path }}"
+                           class="text-sea-600 font-medium hover:underline">войдите в аккаунт</a>.
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+
+            <div id="reviews-list" class="grid md:grid-cols-2 gap-6">
+                {% for review in reviews %}
+                    {% include 'partials/review_card.html' with review=review %}
+                {% endfor %}
+            </div>
+
+            <div id="reviews-empty" class="text-center py-12 text-sand-400 reveal {% if reviews %}hidden{% endif %}">
                 <i class="ph ph-chat-circle text-5xl mb-3"></i>
                 <p>Отзывов пока нет. Будьте первым!</p>
             </div>
-            {% endif %}
         </div>
     </section>
 
@@ -287,6 +310,142 @@
             [{{ apartment.latitude }}, {{ apartment.longitude }}],
             '{{ apartment.name|escapejs }}'
         );
+
+        initReviewForm();
     });
+
+    function initReviewForm() {
+        const form = document.getElementById('review-form');
+        if (!form) return;
+
+        // --- Rating stars interaction ---
+        const stars = form.querySelectorAll('.rating-star');
+        const ratingInput = document.getElementById('rating-input');
+
+        function paintStars(value) {
+            stars.forEach(function(star) {
+                const v = parseInt(star.dataset.value, 10);
+                if (v <= value) {
+                    star.classList.add('text-yellow-400');
+                    star.classList.remove('text-sand-300');
+                } else {
+                    star.classList.remove('text-yellow-400');
+                    star.classList.add('text-sand-300');
+                }
+            });
+        }
+
+        stars.forEach(function(star) {
+            star.addEventListener('mouseenter', function() {
+                paintStars(parseInt(star.dataset.value, 10));
+            });
+            star.addEventListener('mouseleave', function() {
+                paintStars(parseInt(ratingInput.value, 10) || 0);
+            });
+            star.addEventListener('click', function() {
+                ratingInput.value = star.dataset.value;
+                paintStars(parseInt(star.dataset.value, 10));
+            });
+        });
+
+        // --- AJAX submit ---
+        function clearErrors() {
+            form.querySelectorAll('.form-error').forEach(function(el) {
+                el.classList.add('hidden');
+                el.textContent = '';
+            });
+            const general = document.getElementById('review-form-error');
+            general.classList.add('hidden');
+            general.textContent = '';
+        }
+
+        function showFieldError(field, message) {
+            const el = form.querySelector('.form-error[data-field="' + field + '"]');
+            if (el) {
+                el.textContent = message;
+                el.classList.remove('hidden');
+            }
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            clearErrors();
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-60', 'cursor-not-allowed');
+
+            const formData = new FormData(form);
+            const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: formData,
+                credentials: 'same-origin',
+            }).then(function(response) {
+                return response.json().then(function(data) {
+                    return { ok: response.ok, status: response.status, data: data };
+                });
+            }).then(function(result) {
+                if (result.ok && result.data.success) {
+                    // Prepend new review
+                    const list = document.getElementById('reviews-list');
+                    const empty = document.getElementById('reviews-empty');
+                    if (empty) empty.classList.add('hidden');
+
+                    const wrapper = document.createElement('div');
+                    wrapper.innerHTML = result.data.html.trim();
+                    const node = wrapper.firstElementChild;
+                    list.insertBefore(node, list.firstChild);
+
+                    // Update count / avg rating in heading
+                    updateReviewSummary(result.data.review_count, result.data.avg_rating);
+
+                    // Reset form
+                    form.reset();
+                    ratingInput.value = '';
+                    paintStars(0);
+
+                    const success = document.getElementById('review-form-success');
+                    success.classList.remove('hidden');
+                    setTimeout(function() { success.classList.add('hidden'); }, 3000);
+                } else if (result.data && result.data.errors) {
+                    Object.keys(result.data.errors).forEach(function(field) {
+                        const errs = result.data.errors[field];
+                        if (errs && errs.length) {
+                            showFieldError(field, errs[0].message);
+                        }
+                    });
+                } else {
+                    const general = document.getElementById('review-form-error');
+                    general.textContent = 'Не удалось отправить отзыв. Попробуйте ещё раз.';
+                    general.classList.remove('hidden');
+                }
+            }).catch(function() {
+                const general = document.getElementById('review-form-error');
+                general.textContent = 'Ошибка сети. Проверьте подключение и попробуйте снова.';
+                general.classList.remove('hidden');
+            }).finally(function() {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+            });
+        });
+    }
+
+    function updateReviewSummary(count, avg) {
+        const headings = document.querySelectorAll('h2.font-serif');
+        headings.forEach(function(h) {
+            if (h.textContent.indexOf('Отзывы гостей') === -1) return;
+            var html = 'Отзывы гостей <span class="text-sand-500 text-lg">(' + count + ')<\/span>';
+            if (avg) {
+                html += ' <span class="ml-3 text-base font-normal text-yellow-500">\u2605 ' + avg + '<\/span>';
+            }
+            h.innerHTML = html;
+        });
+    }
 </script>
 {% endblock %}
