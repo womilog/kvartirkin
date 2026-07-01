@@ -10,6 +10,7 @@ import users.admin      # noqa: F401 — registers models with custom_admin_site
 
 urlpatterns = [
     path('admin/', custom_admin_site.urls),
+    path('ai/', include('common.ai_assistant.urls')),
     path('', include('apartments.urls')),
     path('', include('users.urls')),
 ]

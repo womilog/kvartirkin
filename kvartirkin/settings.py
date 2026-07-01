@@ -20,7 +20,8 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'users',
     'apartments',
-    'django_extensions'
+    'django_extensions',
+    'common.ai_assistant',
 ]
 
 MIDDLEWARE = [

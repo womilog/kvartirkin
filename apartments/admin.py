@@ -39,7 +39,7 @@ class ApartmentAdmin(CustomModelAdmin):
             'fields': ('latitude', 'longitude')
         }),
         ('Удобства', {
-            'fields': ('has_wifi', 'has_smart_tv', 'has_washing_machine', 'has_ac', 'pets_allowed')
+            'fields': ('has_wifi', 'has_smart_tv', 'has_washing_machine', 'has_ac', 'pets_allowed', 'free_private_park', 'near_pool', 'avaible_smoke')
         }),
     )
 

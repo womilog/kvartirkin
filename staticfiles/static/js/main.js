@@ -170,46 +170,124 @@ function initAIAssistant() {
         if (e.target === modal) closeModal();
     });
     
-    // Отправка сообщения
-    if (chatForm) {
-        chatForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const message = chatInput.value.trim();
-            if (!message) return;
-            
-            // Добавление сообщения пользователя
-            addMessage(message, 'user');
-            chatInput.value = '';
-            
-            // Имитация ответа (в реальности здесь будет запрос к API)
-            setTimeout(() => {
-                const responses = [
-                    'Благодарю за вопрос! Я помогу вам подобрать идеальные апартаменты в Геленджике. Расскажите, пожалуйста, на какие даты вы планируете заезд?',
-                    'Отличный выбор! У нас есть несколько свободных вариантов. Какое количество гостей планируется?',
-                    'Конечно! Все наши квартиры находятся в шаговой доступности от моря. Хотите узнать подробнее о конкретном объекте?'
-                ];
-                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                addMessage(randomResponse, 'assistant');
-            }, 1000);
-        });
+        // ---- Helpers ------------------------------------------------------
+    // Read the CSRF token from the cookie Django sets — required for POST.
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return '';
     }
-    
-    function addMessage(text, sender) {
-        if (!chatMessages) return;
-        
+
+    // Minimal HTML-escape — protects against accidental markup in replies.
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text == null ? '' : String(text);
+        return div.innerHTML;
+    }
+
+    function addMessage(text, sender, opts) {
+        if (!chatMessages) return null;
+        const options = opts || {};
         const messageDiv = document.createElement('div');
         messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+        const bubbleClasses = sender === 'user'
+            ? 'bg-sea-500 text-white rounded-br-md'
+            : 'bg-sand-100 text-sand-800 rounded-bl-md';
+        const degradedNote = options.degraded
+            ? '<p class="text-[10px] mt-2 italic opacity-70">Упрощённый режим</p>'
+            : '';
+        // Preserve newlines from the model output (white-space: pre-wrap).
         messageDiv.innerHTML = `
-            <div class="max-w-[80%] px-4 py-3 rounded-2xl ${
-                sender === 'user' 
-                    ? 'bg-sea-500 text-white rounded-br-md' 
-                    : 'bg-sand-100 text-sand-800 rounded-bl-md'
-            }">
-                <p class="text-sm">${text}</p>
+            <div class="max-w-[80%] px-4 py-3 rounded-2xl ${bubbleClasses}">
+                <p class="text-sm" style="white-space: pre-wrap;">${escapeHtml(text)}</p>
+                ${degradedNote}
             </div>
         `;
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+        return messageDiv;
+    }
+
+    function addTypingIndicator() {
+        if (!chatMessages) return null;
+        const wrap = document.createElement('div');
+        wrap.className = 'flex justify-start';
+        wrap.setAttribute('data-typing', '1');
+        wrap.innerHTML = `
+            <div class="max-w-[80%] px-4 py-3 rounded-2xl bg-sand-100 text-sand-800 rounded-bl-md">
+                <p class="text-sm opacity-60">…</p>
+            </div>
+        `;
+        chatMessages.appendChild(wrap);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return wrap;
+    }
+
+    // ---- Submit handler ----------------------------------------------
+    if (chatForm) {
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            chatInput.value = '';
+            chatInput.disabled = true;
+
+            const typing = addTypingIndicator();
+
+            try {
+                const response = await fetch('/ai/chat/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ message }),
+                });
+
+                if (typing) typing.remove();
+
+                if (response.status === 429) {
+                    addMessage(
+                        'Слишком много вопросов подряд. Подождите немного и попробуйте снова.',
+                        'assistant',
+                        { degraded: true }
+                    );
+                    return;
+                }
+
+                if (!response.ok) {
+                    let errText = 'Не удалось получить ответ. Попробуйте ещё раз чуть позже.';
+                    try {
+                        const data = await response.json();
+                        if (data && data.error) errText = data.error;
+                    } catch (_) { /* ignore */ }
+                    addMessage(errText, 'assistant', { degraded: true });
+                    return;
+                }
+
+                const data = await response.json();
+                addMessage(
+                    data.reply || 'Извините, ответа не получилось.',
+                    'assistant',
+                    { degraded: !!data.degraded }
+                );
+            } catch (err) {
+                if (typing) typing.remove();
+                addMessage(
+                    'Сетевая ошибка. Проверьте подключение и попробуйте ещё раз.',
+                    'assistant',
+                    { degraded: true }
+                );
+            } finally {
+                chatInput.disabled = false;
+                chatInput.focus();
+            }
+        });
     }
 }
 
