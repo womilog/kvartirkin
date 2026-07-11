@@ -160,39 +160,41 @@
 
                     <h3 class="font-serif text-xl font-medium text-sand-900 mt-8 mb-4">Удобства</h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        {% if apartment.has_wifi %}
-                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white amenity-item{% if not apartment.has_wifi %} amenity-unavailable {% endif %}"> 
                             <i class="ph ph-wifi-high text-xl text-sea-500"></i>
-                            <span class="text-sm text-sand-700">Wi-Fi</span>
+                            <span class="amenity-label text-sm ">Wi-Fi</span>
                         </div>
-                        {% endif %}
-                        {% if apartment.has_smart_tv %}
-                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white amenity-item{% if not apartment.has_smart_tv %} amenity-unavailable{% endif %}">
                             <i class="ph ph-television text-xl text-sea-500"></i>
-                            <span class="text-sm text-sand-700">Smart TV</span>
+                            <span class="amenity-label text-sm text-sand-700">Smart TV</span>
                         </div>
-                        {% endif %}
-                        {% if apartment.has_washing_machine %}
-                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white amenity-item{% if not apartment.has_washing_machine %} amenity-unavailable{% endif %}">
                             <i class="ph ph-washing-machine text-xl text-sea-500"></i>
-                            <span class="text-sm text-sand-700">Стиральная машина</span>
+                            <span class="amenity-label text-sm text-sand-700">Стиральная машина</span>
                         </div>
-                        {% endif %}
-                        {% if apartment.has_ac %}
-                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white amenity-item{% if not apartment.has_ac %} amenity-unavailable{% endif %}">
                             <i class="ph ph-snowflake text-xl text-sea-500"></i>
-                            <span class="text-sm text-sand-700">Кондиционер</span>
+                            <span class="amenity-label text-sm text-sand-700">Кондиционер</span>
                         </div>
-                        {% endif %}
-                        {% if apartment.pets_allowed %}
-                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white amenity-item{% if not apartment.pets_allowed %} amenity-unavailable{% endif %}">
                             <i class="ph ph-paw-print text-xl text-sea-500"></i>
-                            <span class="text-sm text-sand-700">Можно с питомцем</span>
+                            <span class="amenity-label text-sm text-sand-700">Можно с питомцем</span>
                         </div>
-                        {% endif %}
-                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white">
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white amenity-item amenity-free-private-park{% if not apartment.free_private_park %} amenity-unavailable{% endif %}">
+                            <i class="ph ph-car text-xl text-sea-500"></i>
+                            <span class="amenity-label text-sm text-sand-700">Частная парковка</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white amenity-item amenity-near-pool{% if not apartment.near_pool %} amenity-unavailable{% endif %}">
+                            <i class="ph ph-swimming-pool text-xl text-sea-500"></i>
+                            <span class="amenity-label text-sm text-sand-700">Бассейн</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white amenity-item amenity-smoking-allowed{% if not apartment.avaible_smoke %} amenity-unavailable{% endif %}">
+                            <i class="ph ph-cigarette text-xl text-sea-500"></i>
+                            <span class="amenity-label text-sm text-sand-700">Разрешено курить</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white amenity-item">
                             <i class="ph ph-cooking-pot text-xl text-sea-500"></i>
-                            <span class="text-sm text-sand-700">Кухня</span>
+                            <span class="amenity-label text-sm text-sand-700">Кухня</span>
                         </div>
                     </div>
                 </div>

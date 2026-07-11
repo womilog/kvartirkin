@@ -68,10 +68,11 @@
                 <div class="order-1 lg:order-2 reveal">
                     <div class="double-bezel">
                         <div class="double-bezel-inner p-0 overflow-hidden">
-                            <div class="comparison-slider relative h-[400px] sm:h-[500px] lg:h-[600px] rounded-[calc(2rem-6px)]" id="comparison-slider">
-                                <img src="/media/apartaments/2.png" alt="Обставленная квартира" class="w-full h-full object-cover">
+                            <!-- Задаем точные пропорции 708/408 -->
+                            <div class="comparison-slider relative w-full rounded-[calc(2rem-6px)]" style="aspect-ratio: 708 / 408;" id="comparison-slider">
+                                <img src="media/apartaments/2.png" alt="Обставленная квартира" class="w-full h-full object-cover pointer-events-none" id="019f4cd0-2b57-776d-830d-6b124031eb18">
                                 <div class="comparison-before" id="comparison-before">
-                                    <img src="/media/apartaments/1.jpg" alt="Пустая квартира" class="w-full h-full object-cover">
+                                    <img src="media/apartaments/1.png" alt="Пустая квартира" class="w-full h-full object-cover pointer-events-none" id="019f4cd0-2b50-756f-a383-dc29d19eb051">
                                 </div>
                                 <div class="comparison-handle" id="comparison-handle"></div>
                             </div>
@@ -143,9 +144,22 @@
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.rooms }} комн.</span>
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.area }} м²</span>
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">до {{ apt.max_guests }} гостей</span>
-                                    {% if apt.has_wifi %}<span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs"><i class="ph ph-wifi-high mr-1"></i>Wi-Fi</span>{% endif %}
-                                    {% if apt.pets_allowed %}<span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs"><i class="ph ph-paw-print mr-1"></i>Питомцы</span>{% endif %}
                                 </div>
+                                <ul class="amenity-list flex flex-wrap gap-2 mb-4 list-none p-0">
+                                    <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.has_wifi %} amenity-unavailable{% endif %}"><i class="ph ph-wifi-high mr-1"></i><span class="amenity-label">Wi-Fi</span></li>
+                                    <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.has_smart_tv %} amenity-unavailable{% endif %}"><i class="ph ph-television mr-1"></i><span class="amenity-label">Smart TV</span></li>
+                                    <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.has_washing_machine %} amenity-unavailable{% endif %}"><i class="ph ph-washing-machine mr-1"></i><span class="amenity-label">Стиральная машина</span></li>
+                                    <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.has_ac %} amenity-unavailable{% endif %}"><i class="ph ph-snowflake mr-1"></i><span class="amenity-label">Кондиционер</span></li>
+                                    <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.pets_allowed %} amenity-unavailable{% endif %}"><i class="ph ph-paw-print mr-1"></i><span class="amenity-label">Питомцы</span></li>
+                                    <li class="amenity-tag amenity-list-item amenity-free-private-park px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.free_private_park %} amenity-unavailable{% endif %}"><i class="ph ph-car mr-1"></i><span class="amenity-label">Частная парковка</span></li>
+                                    <li class="amenity-tag amenity-list-item amenity-near-pool px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.near_pool %} amenity-unavailable{% endif %}"><i class="ph ph-swimming-pool mr-1"></i><span class="amenity-label">Бассейн</span></li>
+                                    <li class="amenity-tag amenity-list-item amenity-smoking-allowed px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.avaible_smoke %} amenity-unavailable{% endif %}"><i class="ph ph-cigarette mr-1"></i><span class="amenity-label">Разрешено курить</span></li>
+                                </ul>
+                                <!-- <ul class="amenity-list flex flex-wrap gap-2 mb-4 list-none p-0">
+                                    {% if apt.free_private_park %}<li class="amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs"><i class="ph ph-car mr-1"></i>Частная парковка</li>{% endif %}
+                                    {% if apt.near_pool %}<li class="amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs"><i class="ph ph-swimming-pool mr-1"></i>Бассейн</li>{% endif %}
+                                    {% if apt.avaible_smoke %}<li class="amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs"><i class="ph ph-cigarette mr-1"></i>Разрешено курить</li>{% endif %}
+                                </ul> -->
                                 <a href="{{ apt.get_absolute_url }}" class="magnetic-btn w-full flex items-center justify-center gap-2 px-6 py-3 bg-sand-800 text-white rounded-full font-medium text-sm hover:bg-sand-900 transition-colors">
                                     <span>Подробнее</span>
                                     <i class="ph ph-arrow-right"></i>
@@ -225,7 +239,7 @@
                         </div>
                         <div class="absolute -bottom-8 -left-8 w-48 h-36 double-bezel hidden lg:block">
                             <div class="double-bezel-inner p-6 flex flex-col items-center justify-center text-center bg-sea-50">
-                                <div class="font-serif text-4xl font-semibold text-sea-600 mb-1">5+</div>
+                                <div class="font-serif text-4xl font-semibold text-sea-600 mb-1">13+</div>
                                 <div class="text-sm text-sand-600">Лет опыта в<br>гостеприимстве</div>
                             </div>
                         </div>

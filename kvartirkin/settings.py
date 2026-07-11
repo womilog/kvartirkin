@@ -110,20 +110,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # In development we use the console backend so emails are printed to stdout.
 # In production set EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
 # and provide EMAIL_HOST / EMAIL_HOST_USER / EMAIL_HOST_PASSWORD via env vars.
-EMAIL_BACKEND = os.environ.get(
-    'EMAIL_BACKEND',
-    'django.core.mail.backends.console.EmailBackend',
-)
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.yandex.ru')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get(
-    'DEFAULT_FROM_EMAIL', 'noreply@kvartirkin.local'
-)
+# EMAIL_BACKEND = os.environ.get(
+#     'EMAIL_BACKEND',
+#     'django.core.mail.backends.console.EmailBackend',
+# )
+# EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.yandex.ru')
+# EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+# EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+# EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+# DEFAULT_FROM_EMAIL = os.environ.get(
+#     'DEFAULT_FROM_EMAIL', 'noreply@kvartirkin.local'
+# )
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'womilog228@mail.ru'
+EMAIL_HOST_PASSWORD = 'wQLfc5oU63dm2H59hDeZ'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
 
 # Email of the landlord / administrator that receives booking requests.
 # Change this default to update the address site-wide, or override it
 # via the LANDLORD_EMAIL environment variable in production.
-LANDLORD_EMAIL = os.environ.get('LANDLORD_EMAIL', 'womilog228@mail.ru')
+LANDLORD_EMAIL = 'chop.vlad35@mail.ru'  # os.environ.get('LANDLORD_EMAIL', 'womilog228@mail.ru')

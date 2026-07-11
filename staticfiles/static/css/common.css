@@ -141,3 +141,71 @@ html {
     transform: translateY(-2px);
     box-shadow: 0 10px 30px -10px rgba(59, 168, 179, 0.3);
 }
+
+/* ===== Удобства: доступные / недоступные ===== */
+/* Недоступные удобства (значение поля = False) визуально гасятся
+   и перечёркиваются, доступные отображаются в обычном виде. */
+.amenity-item,
+.amenity-tag,
+.amenity-icon {
+    transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+
+
+
+/* Общее приглушение недоступного удобства */
+.amenity-unavailable {
+    opacity: 0.55;
+}
+
+/* Перечёркивание текстовой подписи (карточки и теги с текстом) */
+.amenity-unavailable .amenity-label {
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+    color: #9d8567; /* sand-500 */
+}
+
+.amenity-unavailable i {
+    color: #b8a184; /* sand-400 */
+}
+
+/* Явная текстовая пометка «недоступно» рядом с подписью удобства. sand-400 
+   Показывается только для карточек/тегов, где есть текстовая подпись. */
+/* .amenity-unavailable .amenity-label::after {
+    content: " — недоступно";
+    font-style: italic;
+    text-decoration: none;
+    color: #b8a184; 
+    white-space: nowrap;
+} */
+
+
+
+
+
+
+
+
+
+
+
+
+/* Иконочный ряд без текста: рисуем диагональную линию поверх иконки */
+.amenity-icon.amenity-unavailable {
+    position: relative;
+    color: #b8a184; /* sand-400 */
+}
+
+.amenity-icon.amenity-unavailable::after {
+    content: '';
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    top: 50%;
+    height: 2px;
+    background: currentColor;
+    transform: translateY(-50%) rotate(-20deg);
+    border-radius: 2px;
+    pointer-events: none;
+}
