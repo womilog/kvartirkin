@@ -22,6 +22,12 @@ import os
 from dataclasses import dataclass
 
 from django.conf import settings
+from pathlib import Path
+from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / '.env')
 
 
 def _env(name: str, default: str = "") -> str:
@@ -67,19 +73,19 @@ class AssistantSettings:
             # rotate it in production via ``GIGACHAT_CREDENTIALS``.
             credentials=_env(
                 "GIGACHAT_CREDENTIALS",
-                "M2UyMDc2ZGUtYjBmNC00ZDEzLWFhYmItNThjMDBkMzg1Nzc4OjBlMjM4ZjIzLTFkYzctNDgwYS1hYjliLTA5YmY0ZTg3OTE0NQ==",
+                "",
             ),
-            scope=_env("GIGACHAT_SCOPE", "GIGACHAT_API_PERS"),
-            model=_env("GIGACHAT_MODEL", "GigaChat-2"),
+            scope=_env("GIGACHAT_SCOPE", ""),
+            model=_env("GIGACHAT_MODEL", ""),
             base_url=_env(
                 "GIGACHAT_BASE_URL",
-                "https://gigachat.devices.sberbank.ru/api/v1",
+                "",
             ),
             auth_url=_env(
                 "GIGACHAT_AUTH_URL",
-                "https://ngw.devices.sberbank.ru:9443/api/v2/oauth",
+                "",
             ),
-            verify_ssl=_env_bool("GIGACHAT_VERIFY_SSL", "G:/sertifacts_for_gigachat/russian_trusted_root_ca.cer"),  # False
+            verify_ssl='dop/russian_trusted_root_ca.cer',  # False
             request_timeout=float(_env("GIGACHAT_TIMEOUT", "30")),
             max_history_messages=int(_env("AI_ASSISTANT_MAX_HISTORY", "8")),
             max_retrieved_apartments=int(_env("AI_ASSISTANT_MAX_RAG_HITS", "4")),

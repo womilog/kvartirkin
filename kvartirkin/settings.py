@@ -4,12 +4,17 @@ Django settings for kvartirkin project.
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-kvartirkin-dev-key-change-in-production')
 
-DEBUG =  True 
+DEBUG =  os.environ.get("DEBUG") == 'True'
+
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+
 INSTALLED_APPS = [
     'django.contrib.admin.apps.SimpleAdminConfig',
     'django.contrib.auth',
@@ -123,17 +128,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     'DEFAULT_FROM_EMAIL', 'noreply@kvartirkin.local'
 # )
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.mail.ru'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'womilog228@mail.ru'
-EMAIL_HOST_PASSWORD = 'wQLfc5oU63dm2H59hDeZ'
+EMAIL_BACKEND = EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend',)
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587')) 
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'True') == 'True'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
 
 # Email of the landlord / administrator that receives booking requests.
 # Change this default to update the address site-wide, or override it
 # via the LANDLORD_EMAIL environment variable in production.
-LANDLORD_EMAIL = 'chop.vlad35@mail.ru'  # os.environ.get('LANDLORD_EMAIL', 'womilog228@mail.ru')
+LANDLORD_EMAIL = os.environ.get('LANDLORD_EMAIL', '')

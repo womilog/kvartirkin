@@ -6,7 +6,7 @@
 
 {% block extra_head_scripts %}
     <!-- Yandex Maps -->
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_api_ключ&lang=ru_RU" type="text/javascript"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=7af99a2d-b8b6-48b4-a97f-ca2a0f71b2aa&lang=ru_RU" type="text/javascript"></script>
 {% endblock %}
 
 {% block extra_css %}
@@ -205,6 +205,8 @@
                     <div class="double-bezel">
                         <div class="double-bezel-inner overflow-hidden">
                             <div id="yandex-map" class="h-64 w-full rounded-[calc(2rem-6px)]"></div>
+                        {{ apartment.latitude|json_script:"map-lat" }}
+                        {{ apartment.longitude|json_script:"map-lng" }}
                         </div>
                     </div>
                     <p class="text-sm text-sand-600 mt-3 flex items-center gap-2">
@@ -308,8 +310,10 @@
         Kvartirkin.calculateBookingTotal();
         Kvartirkin.initCommentLikes();
         // Инициализация Яндекс карты с координатами из БД
+        var mapLat = parseFloat(JSON.parse(document.getElementById('map-lat').textContent));
+        var mapLng = parseFloat(JSON.parse(document.getElementById('map-lng').textContent));
         Kvartirkin.initYandexMap(
-            [{{ apartment.latitude }}, {{ apartment.longitude }}],
+            [mapLat, mapLng],
             '{{ apartment.name|escapejs }}'
         );
 

@@ -18,9 +18,14 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Iterable
 
 logger = logging.getLogger(__name__)
+
+# Path to the hand-written living-rules text file. It ships with the
+# deployment next to this module so admins can edit it without touching code.
+RULES_FILE = Path(__file__).resolve().parent / "Правила проживания.txt"
 
 
 @dataclass
@@ -28,7 +33,7 @@ class Document:
     """A retrievable chunk of knowledge.
 
     ``doc_id`` is opaque but stable; ``source`` is one of
-    ``"apartment" | "review" | "faq"`` for downstream filtering/UX.
+    ``"apartment" | "review" | "faq" | "rules"`` for downstream filtering/UX.
     """
 
     doc_id: str
@@ -84,6 +89,76 @@ FAQ: list[tuple[str, str]] = [
 ]
 
 
+def load_rules_text() -> str:
+    """Read the raw living-rules text file.
+
+    Returns an empty string (and logs) if the file is missing so the
+    assistant keeps working even without the rules file.
+    """
+    try:
+        return RULES_FILE.read_text(encoding="utf-8").strip()
+    except FileNotFoundError:
+        logger.warning("AI assistant: rules file not found at %s", RULES_FILE)
+        return ""
+    except Exception:  # noqa: BLE001
+        logger.exception("AI assistant: failed to read rules file")
+        return ""
+
+
+def _rules_to_documents() -> list[Document]:
+    """Split the rules text into retrievable, rule-level documents.
+
+    The rules file uses a ``Заголовок | текст`` line format. Each non-empty
+    line that contains a ``|`` becomes its own ``Document`` so TF-IDF can
+    surface just the relevant rule for a given question. The first line of
+    the file is treated as the overall header and prepended to titles.
+    """
+    text = load_rules_text()
+    if not text:
+        return []
+
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    if not lines:
+        return []
+
+    # First line is the file-level header (no pipe delimiter expected).
+    header = lines[0] if "|" not in lines[0] else "Правила проживания"
+    start = 1 if "|" not in lines[0] else 0
+
+    docs: list[Document] = []
+    idx = 0
+    for ln in lines[start:]:
+        if "|" in ln:
+            title_part, _, body_part = ln.partition("|")
+            title = title_part.strip()
+            body = body_part.strip()
+        else:
+            # Line without a delimiter — index it as a standalone rule.
+            title = f"Правило {idx + 1}"
+            body = ln
+        docs.append(
+            Document(
+                doc_id=f"rules:{idx}",
+                source="rules",
+                title=f"{header} — {title}" if title else header,
+                text=f"{header}. {title}: {body}" if title else f"{header}. {body}",
+            )
+        )
+        idx += 1
+
+    # Fallback: if parsing produced nothing, index the whole file as one doc.
+    if not docs:
+        docs.append(
+            Document(
+                doc_id="rules:0",
+                source="rules",
+                title=header,
+                text=text,
+            )
+        )
+    return docs
+
+
 def _apartment_to_text(apt) -> str:
     """Render an ``Apartment`` instance as a compact descriptive paragraph.
 
@@ -136,7 +211,7 @@ def _review_to_text(review) -> str:
 
 
 def load_documents() -> list[Document]:
-    """Materialize the full corpus from the ORM + the static FAQ.
+    """Materialize the full corpus from the ORM + the static FAQ + rules.
 
     Returns a fresh list each call; the caller decides about caching
     (``retriever.IndexCache``).
@@ -191,6 +266,9 @@ def load_documents() -> list[Document]:
                 text=f"Вопрос: {q}\nОтвет: {a}",
             )
         )
+
+    # Living-rules sections, read from the shipped .txt file.
+    docs.extend(_rules_to_documents())
 
     return docs
 

@@ -1,4 +1,4 @@
-"""High-level facade tying together RAG, prompts and the LLM client.
+﻿"""High-level facade tying together RAG, prompts and the LLM client.
 
 The rest of the app only ever talks to ``get_assistant()``.
 
@@ -14,7 +14,7 @@ Flow per user message:
 4. If anything goes wrong with the LLM (quota, network, rate-limit), build
    a deterministic fallback answer from the same RAG hits.
 
-The class is stateless across requests — conversation history is supplied
+The class is stateless across requests â€” conversation history is supplied
 by the caller (currently the Django session, see ``views.py``).
 """
 
@@ -38,7 +38,7 @@ from .exceptions import (
 
 from .fallback import build_fallback_answer
 from .knowledge_base import Document
-from .prompts import SYSTEM_PROMPT, build_context_block
+from .prompts import build_context_block, build_system_prompt
 from .retriever import Retriever, get_retriever
 
 logger = logging.getLogger(__name__)
@@ -64,6 +64,9 @@ class Assistant:
         self._settings = settings or get_settings()
         self._retriever = retriever or get_retriever()
         self._client = client or GigaChatClient(self._settings)
+        # Build once per instance so edits to the rules .txt file are
+        # picked up whenever the singleton is reset (see reset_assistant).
+        self._system_prompt = build_system_prompt()
 
     # -- public -------------------------------------------------------------
     def answer(
@@ -74,7 +77,7 @@ class Assistant:
         user_message = (user_message or "").strip()
         if not user_message:
             return AssistantReply(
-                text="Пожалуйста, напишите вопрос — я постараюсь помочь.",
+                text="ÐŸÐ¾Ð¶Ð°Ð»ÑƒÐ¹ÑÑ‚Ð°, Ð½Ð°Ð¿Ð¸ÑˆÐ¸Ñ‚Ðµ Ð²Ð¾Ð¿Ñ€Ð¾Ñ â€” Ñ Ð¿Ð¾ÑÑ‚Ð°Ñ€Ð°ÑŽÑÑŒ Ð¿Ð¾Ð¼Ð¾Ñ‡ÑŒ.",
                 degraded=False,
                 reason=None,
                 sources=[],
@@ -84,8 +87,8 @@ class Assistant:
             logger.info("AI assistant disabled via settings")
             return AssistantReply(
                 text=(
-                    "Нейро-консультант временно отключён администратором. "
-                    "Свяжитесь с нами через контакты в подвале сайта."
+                    "ÐÐµÐ¹Ñ€Ð¾-ÐºÐ¾Ð½ÑÑƒÐ»ÑŒÑ‚Ð°Ð½Ñ‚ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ð¾ Ð¾Ñ‚ÐºÐ»ÑŽÑ‡Ñ‘Ð½ Ð°Ð´Ð¼Ð¸Ð½Ð¸ÑÑ‚Ñ€Ð°Ñ‚Ð¾Ñ€Ð¾Ð¼. "
+                    "Ð¡Ð²ÑÐ¶Ð¸Ñ‚ÐµÑÑŒ Ñ Ð½Ð°Ð¼Ð¸ Ñ‡ÐµÑ€ÐµÐ· ÐºÐ¾Ð½Ñ‚Ð°ÐºÑ‚Ñ‹ Ð² Ð¿Ð¾Ð´Ð²Ð°Ð»Ðµ ÑÐ°Ð¹Ñ‚Ð°."
                 ),
                 degraded=True,
                 reason="disabled",
@@ -179,7 +182,7 @@ class Assistant:
         # GigaChat requires exactly one system message and it must come
         # first, so the persona prompt and the retrieved context are
         # concatenated into a single system turn.
-        system_content = SYSTEM_PROMPT + "\n\n" + context_block
+        system_content = self._system_prompt + "\n\n" + context_block
 
         messages: list[dict[str, str]] = [
             {"role": "system", "content": system_content},
