@@ -1,3 +1,34 @@
+# Virtual environments
 .venv
+venv/
+env/
+
+# IDE / tooling
 .continue
+.vscode/
+.idea/
+
+# Environment variables / secrets
 .env
+*.env
+!.env.example
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database (do NOT ship the dev DB to the server)
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+
+# Collected static (regenerated on the server)
+staticfiles_collected/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

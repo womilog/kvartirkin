@@ -1,0 +1,20 @@
+services:
+  web:
+    build: .
+    image: kvartirkin
+    container_name: kvartirkin
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    environment:
+      # Store the SQLite DB inside the mounted data directory so it survives
+      # container/image rebuilds. Mounting a directory (not a single file)
+      # avoids Docker creating an empty folder where the DB file should be.
+      - DB_NAME=/app/data/db.sqlite3
+    volumes:
+      # Persist the SQLite database directory on the host.
+      - ./data:/app/data
+      # Persist user-uploaded media across rebuilds.
+      - ./media:/app/media

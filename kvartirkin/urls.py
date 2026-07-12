@@ -15,5 +15,7 @@ urlpatterns = [
     path('', include('users.urls')),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Serve user-uploaded media files. In a small single-container deployment we
+# let Django/WhiteNoise-adjacent view serve them. For high traffic put nginx
+# in front and serve MEDIA_ROOT directly instead.
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
