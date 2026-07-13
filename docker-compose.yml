@@ -31,7 +31,10 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
     ports:
-      - "8000:8000"
+      # Bind only to localhost: nginx on the host proxies to this port and
+      # terminates HTTPS. The container is never exposed directly to the
+      # internet (no bypassing nginx / TLS).
+      - "127.0.0.1:8000:8000"
     volumes:
       # Persist user-uploaded media across rebuilds.
       - ./media:/app/media
