@@ -1,4 +1,23 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: kvartirkin_db
+    restart: unless-stopped
+    environment:
+      # These must match DB_NAME / DB_USER / DB_PASSWORD in your .env file.
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      # Persist the Postgres data on the host across rebuilds.
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      # web waits until Postgres is actually ready to accept connections.
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   web:
     build: .
     image: kvartirkin
@@ -6,15 +25,19 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      # Inside the Docker network the database host is the service name "db",
+      # NOT localhost. This overrides DB_HOST from .env so it always works.
+      - DB_HOST=db
+      - DB_PORT=5432
     ports:
       - "8000:8000"
-    environment:
-      # Store the SQLite DB inside the mounted data directory so it survives
-      # container/image rebuilds. Mounting a directory (not a single file)
-      # avoids Docker creating an empty folder where the DB file should be.
-      - DB_NAME=/app/data/db.sqlite3
     volumes:
-      # Persist the SQLite database directory on the host.
-      - ./data:/app/data
       # Persist user-uploaded media across rebuilds.
       - ./media:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pg_data:

@@ -26,6 +26,10 @@ db.sqlite3-journal
 # Collected static (regenerated on the server)
 staticfiles_collected/
 
+# Database dumps / backups (may contain personal data - keep out of git)
+backups/
+db.json
+
 # Logs
 *.log
 
