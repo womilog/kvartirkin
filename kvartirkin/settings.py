@@ -17,7 +17,7 @@ ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', 'localhost,1
 
 # CSRF trusted origins (needed when serving over HTTPS / a domain).
 # Provide as comma-separated full origins, e.g. "https://example.com,https://www.example.com"
-CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
+# CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
 
 INSTALLED_APPS = [
     'django.contrib.admin.apps.SimpleAdminConfig',
@@ -69,17 +69,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'kvartirkin.wsgi.application'
 
 # Database — PostgreSQL in production, SQLite for local dev
+# DATABASES = {
+#     'default': {
+#         'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3'),
+#         # In Docker we mount a persistent /app/data directory and point the
+#         # SQLite file there (see docker-compose.yml). Locally it falls back
+#         # to db.sqlite3 in the project root.
+#         'NAME': os.environ.get('DB_NAME', str(BASE_DIR / 'db.sqlite3')),
+#         'USER': os.environ.get('DB_USER', ''),
+#         'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+#         'HOST': os.environ.get('DB_HOST', ''),
+#         'PORT': os.environ.get('DB_PORT', ''),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3'),
-        # In Docker we mount a persistent /app/data directory and point the
-        # SQLite file there (see docker-compose.yml). Locally it falls back
-        # to db.sqlite3 in the project root.
-        'NAME': os.environ.get('DB_NAME', str(BASE_DIR / 'db.sqlite3')),
-        'USER': os.environ.get('DB_USER', ''),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', ''),
-        'PORT': os.environ.get('DB_PORT', ''),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'dbkvartirkin.sqlite3',
     }
 }
 

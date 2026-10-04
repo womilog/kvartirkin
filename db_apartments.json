@@ -1,0 +1,248 @@
+[
+{
+  "model": "apartments.apartment",
+  "pk": 1,
+  "fields": {
+    "name": "Крымская мечта",
+    "slug": "krumskia-mechta",
+    "address": "Крымская улица, 19к7, Геленджик",
+    "rooms": 1,
+    "area": "35.5",
+    "price_per_day": "3500",
+    "description": "Просторная и уютная однокомнатная квартира недалеко от центра Геленджика. \r\nВ шаговой доступности от моря, набережной и всех достопримечательностей.\r\nКвартира полностью оборудована для комфортного проживания: удобная кровать, \r\nполностью укомплектованная кухня, современный душ. Идеально подходит для \r\nпары или небольшой семьи.",
+    "latitude": 43.427,
+    "longitude": 39.9251,
+    "max_guests": 3,
+    "distance_to_sea": "150 метров",
+    "has_wifi": true,
+    "has_smart_tv": true,
+    "has_washing_machine": true,
+    "has_ac": true,
+    "pets_allowed": true,
+    "free_private_park": false,
+    "near_pool": false,
+    "avaible_smoke": false,
+    "is_active": false,
+    "bookings_enabled": false,
+    "created_at": "2026-04-20T17:15:59.163Z"
+  }
+},
+{
+  "model": "apartments.apartment",
+  "pk": 2,
+  "fields": {
+    "name": "Океанская однушка",
+    "slug": "okeanskay-odnushka",
+    "address": "улица Мира, 44 лит 4, Геленджик",
+    "rooms": 1,
+    "area": "48.0",
+    "price_per_day": "7500",
+    "description": "Просторные однокомнатные апартаменты в 50 метрах от моря.  Двуспальная кровать, просторная гостиная в современным минималистическим дизайном. В жилом комплексе имеется бассейн, парковочные места и супермаркеты. В квартире есть все необходимое: кондиционеры, Wi-Fi, Smart TV, стиральная машина, посудомоечная машина. Подходит для семьи с детьми.",
+    "latitude": 44.572886,
+    "longitude": 38.073009,
+    "max_guests": 4,
+    "distance_to_sea": "50 метров",
+    "has_wifi": true,
+    "has_smart_tv": true,
+    "has_washing_machine": true,
+    "has_ac": true,
+    "pets_allowed": true,
+    "free_private_park": true,
+    "near_pool": true,
+    "avaible_smoke": false,
+    "is_active": true,
+    "bookings_enabled": true,
+    "created_at": "2026-04-20T17:15:59.206Z"
+  }
+},
+{
+  "model": "apartments.apartment",
+  "pk": 3,
+  "fields": {
+    "name": "Морской Дуэт",
+    "slug": "morskoy-duat",
+    "address": "ул. Мира, 44 лит 6, Геленджик",
+    "rooms": 2,
+    "area": "70.0",
+    "price_per_day": "7500",
+    "description": "Роскошные двухкомнатные апартаменты рядом с морем.\r\nПросторная гостиная, две спальни, два санузла. Дизайнерский ремонт, \r\nвысококачественная мебель и техника. Джакузи в ванной, терраса для барбекю.\r\nИдеально для большой семьи или компании друзей. Курить разрешается, но только на болконе.",
+    "latitude": 44.572372,
+    "longitude": 38.072039,
+    "max_guests": 6,
+    "distance_to_sea": "100 метров",
+    "has_wifi": true,
+    "has_smart_tv": true,
+    "has_washing_machine": true,
+    "has_ac": true,
+    "pets_allowed": false,
+    "free_private_park": true,
+    "near_pool": true,
+    "avaible_smoke": true,
+    "is_active": true,
+    "bookings_enabled": true,
+    "created_at": "2026-04-20T17:15:59.231Z"
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 1,
+  "fields": {
+    "apartment": 1,
+    "image": "apartaments/apartament_1_1.jpg",
+    "order": 1
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 2,
+  "fields": {
+    "apartment": 1,
+    "image": "apartaments/apartament_1_2.jpg",
+    "order": 2
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 3,
+  "fields": {
+    "apartment": 1,
+    "image": "apartaments/apartament_1_3.jpg",
+    "order": 3
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 4,
+  "fields": {
+    "apartment": 1,
+    "image": "apartaments/apartament_1_4.jpg",
+    "order": 4
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 5,
+  "fields": {
+    "apartment": 1,
+    "image": "apartaments/apartament_1_5.jpg",
+    "order": 5
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 6,
+  "fields": {
+    "apartment": 1,
+    "image": "apartaments/apartament_1_6.jpg",
+    "order": 6
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 7,
+  "fields": {
+    "apartment": 1,
+    "image": "apartaments/apartament_1_7.jpg",
+    "order": 7
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 8,
+  "fields": {
+    "apartment": 1,
+    "image": "apartaments/apartament_1_8.jpg",
+    "order": 8
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 9,
+  "fields": {
+    "apartment": 1,
+    "image": "apartaments/apartament_1_9.jpg",
+    "order": 9
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 10,
+  "fields": {
+    "apartment": 2,
+    "image": "apartaments/apartament_2_1.jpg",
+    "order": 2
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 11,
+  "fields": {
+    "apartment": 2,
+    "image": "apartaments/apartament_2_2.jpg",
+    "order": 1
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 12,
+  "fields": {
+    "apartment": 2,
+    "image": "apartaments/apartament_2_3.jpg",
+    "order": 3
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 13,
+  "fields": {
+    "apartment": 2,
+    "image": "apartaments/apartament_2_4.jpg",
+    "order": 4
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 14,
+  "fields": {
+    "apartment": 2,
+    "image": "apartaments/apartament_2_5.jpg",
+    "order": 5
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 15,
+  "fields": {
+    "apartment": 3,
+    "image": "apartaments/apartament_3_1.png",
+    "order": 1
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 16,
+  "fields": {
+    "apartment": 3,
+    "image": "apartaments/apartament_3_2.png",
+    "order": 2
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 17,
+  "fields": {
+    "apartment": 3,
+    "image": "apartaments/apartament_3_3.png",
+    "order": 3
+  }
+},
+{
+  "model": "apartments.apartmentimage",
+  "pk": 18,
+  "fields": {
+    "apartment": 3,
+    "image": "apartaments/apartament_3_4.png",
+    "order": 4
+  }
+}
+]
