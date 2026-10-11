@@ -101,28 +101,22 @@ def index(request):
     """Home page — show available apartments carousel."""
     from datetime import date
     apartments = Apartment.objects.filter(is_active=True).order_by('name')
-    
+
     # Add current availability to each apartment
     today = date.today()
     apartments_with_availability = []
     for apt in apartments:
         res_now = False
         for res in apt.reservations.all():
-            if res.check_in <= today <= res.check_out :
-                # aware_dt_start = utc_zone.localize(res.check_in)
-                # moscow_time_start = aware_dt_start.astimezone(moscow_tz).strftime('%Y-%m-%d')
-                
-                # aware_dt_end = utc_zone.localize(res.check_out)
-                # moscow_time_end = aware_dt_end.astimezone(moscow_tz).strftime('%Y-%m-%d')
-
+            if res.check_in <= today <= res.check_out:
                 res_now = f"Занято с {res.check_in.strftime('%d-%m-%Y')} по {res.check_out.strftime('%d-%m-%Y')}"
 
         apartments_with_availability.append({
             'apartment': apt,
             'is_available': apt.get_current_availability(),
-            'res_now' : res_now
+            'res_now': res_now,
         })
-    
+
     context = {
         'apartments': apartments_with_availability,
     }

@@ -23,17 +23,17 @@ class ApartmentImageInline(admin.TabularInline):
 
 @admin.register(Apartment, site=custom_admin_site)
 class ApartmentAdmin(CustomModelAdmin):
-    list_display = ('name', 'address', 'rooms', 'area', 'price_per_day', 'is_active', 'bookings_enabled')
+    list_display = ('name', 'city', 'address', 'rooms', 'area', 'price_per_day', 'is_active', 'bookings_enabled')
     prepopulated_fields = {'slug': ('name',)}
     inlines = [ApartmentImageInline]
     list_editable = ('is_active', 'bookings_enabled')
 
     fieldsets = (
         ('Основная информация', {
-            'fields': ('name', 'slug', 'address', 'description', 'is_active', 'bookings_enabled')
+            'fields': ('name', 'city', 'slug', 'address', 'description', 'is_active', 'bookings_enabled')
         }),
         ('Параметры', {
-            'fields': ('rooms', 'area', 'price_per_day', 'max_guests', 'distance_to_sea')
+            'fields': ('rooms', 'area', 'price_per_day', 'max_guests', 'distance_to_center', 'distance_to_sea')
         }),
         ('Координаты', {
             'fields': ('latitude', 'longitude')

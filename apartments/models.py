@@ -2,10 +2,30 @@ from django.db import models
 from django.urls import reverse
 
 
+class VorkutaApartments(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(city=Apartment.City.VORKUTA)
+
+
+class GelendzhikApartments(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(city=Apartment.City.GELENDZHIK)
+    
+
 class Apartment(models.Model):
     """Model for apartments available for daily rent."""
+    class City(models.TextChoices):
+        VORKUTA = ("Vorkuta", "Воркута")
+        GELENDZHIK = ("Gelendzhik", "Геленджик")
+
+    class Smoke(models.TextChoices):
+        ZAPRET = ("zapret", "Запрещено")
+        BALCONY = ("balcony", "На балконе")
+        ENTRANCE = ("entrance", "В подъезде")
+    
     name = models.CharField('Название', max_length=200)
     slug = models.SlugField('URL-слаг', unique=True)
+    city = models.CharField("город", max_length=20, choices=City.choices, default=City.GELENDZHIK)
     address = models.CharField('Адрес', max_length=300)
     rooms = models.PositiveIntegerField('Количество комнат')
     area = models.DecimalField('Площадь (м²)', max_digits=6, decimal_places=1)
@@ -15,23 +35,24 @@ class Apartment(models.Model):
     longitude = models.FloatField('Долгота')
     max_guests = models.PositiveIntegerField('Максимум гостей', default=4)
     distance_to_sea = models.CharField('Расстояние до моря', max_length=100, blank=True)
+    distance_to_center = models.CharField('Расстояние до центра Города', max_length=100, blank=True, default='')
     # main_image =
-
-    # Amenities
-    
-     
     has_wifi = models.BooleanField('Wi-Fi', default=False)
     has_smart_tv = models.BooleanField('Smart TV', default=False)
     has_washing_machine = models.BooleanField('Стиральная машина', default=False)
     has_ac = models.BooleanField('Кондиционер', default=False)
     pets_allowed = models.BooleanField('Можно с питомцем', default=False)
-    free_private_park = models.BooleanField("Бесплатная частная парковка", default=False) # new
-    near_pool = models.BooleanField("Открытый бассейн рядом", default=False) # new
-    avaible_smoke = models.BooleanField("Разрешено курить", default=False) # new
+    free_private_park = models.BooleanField("Бесплатная частная парковка", default=False)
+    near_pool = models.BooleanField("Открытый бассейн рядом", default=False)
+    avaible_smoke = models.CharField("Разрешено курить", max_length=20, choices=Smoke.choices, default=Smoke.ZAPRET)
 
     is_active = models.BooleanField('Активна', default=True)
     bookings_enabled = models.BooleanField('Бронирование разрешено', default=True)
     created_at = models.DateTimeField('Создана', auto_now_add=True)
+
+    objects = models.Manager()
+    vorkuta = VorkutaApartments()
+    gelendzhik = GelendzhikApartments()
 
     class Meta:
         verbose_name = 'Апартаменты'
@@ -51,7 +72,6 @@ class Apartment(models.Model):
 
     def is_available_for_dates(self, check_in, check_out):
         """Check if apartment is available for given date range."""
-        from datetime import date
         if not check_in or not check_out:
             return True
         
@@ -110,13 +130,6 @@ class Reservation(models.Model):
         CONFIRMED = ('confirmed', 'Подтверждено')
         REGECTED = ('rejected', 'Отклонено')
         CANCELLED = ('cancelled', 'Отменено')
-    
-    # STATUS_CHOICES = [
-    #     ('pending', 'Ожидает подтверждения'),
-    #     ('confirmed', 'Подтверждено'),
-    #     ('rejected', 'Отклонено'),
-    #     ('cancelled', 'Отменено'),
-    # ]
 
     apartment = models.ForeignKey(
         Apartment,

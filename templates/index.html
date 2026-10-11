@@ -145,6 +145,7 @@
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.rooms }} комн.</span>
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.area }} м²</span>
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">до {{ apt.max_guests }} гостей</span>
+                                    <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">до центра {{ apt.distance_to_center }}</span>
                                 </div>
                                 <ul class="amenity-list flex flex-wrap gap-2 mb-4 list-none p-0">
                                     <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.has_wifi %} amenity-unavailable{% endif %}"><i class="ph ph-wifi-high mr-1"></i><span class="amenity-label">Wi-Fi</span></li>
@@ -154,7 +155,7 @@
                                     <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.pets_allowed %} amenity-unavailable{% endif %}"><i class="ph ph-paw-print mr-1"></i><span class="amenity-label">Питомцы</span></li>
                                     <li class="amenity-tag amenity-list-item amenity-free-private-park px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.free_private_park %} amenity-unavailable{% endif %}"><i class="ph ph-car mr-1"></i><span class="amenity-label">Частная парковка</span></li>
                                     <li class="amenity-tag amenity-list-item amenity-near-pool px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.near_pool %} amenity-unavailable{% endif %}"><i class="ph ph-swimming-pool mr-1"></i><span class="amenity-label">Бассейн</span></li>
-                                    <li class="amenity-tag amenity-list-item amenity-smoking-allowed px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.avaible_smoke %} amenity-unavailable{% endif %}"><i class="ph ph-cigarette mr-1"></i><span class="amenity-label">Разрешено курить</span></li>
+                                    <li class="amenity-tag amenity-list-item amenity-smoking-allowed px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if apt.avaible_smoke == 'zapret' %} amenity-unavailable{% endif %}"><i class="ph ph-cigarette mr-1"></i><span class="amenity-label">Курение: {{ apt.get_avaible_smoke_display }}</span></li>
                                 </ul>
                                 <!-- <ul class="amenity-list flex flex-wrap gap-2 mb-4 list-none p-0">
                                     {% if apt.free_private_park %}<li class="amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs"><i class="ph ph-car mr-1"></i>Частная парковка</li>{% endif %}

@@ -65,6 +65,7 @@
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.rooms }} комн.</span>
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.area }} м²</span>
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">до {{ apt.max_guests }} гостей</span>
+                                    <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">до центра {{ apt.distance_to_center }}</span>
                                 </div>
                                 <div class="flex gap-3 mb-4 text-sand-500 text-lg">
                                     <i class="ph ph-wifi-high amenity-icon{% if not apt.has_wifi %} amenity-unavailable{% endif %}" title="Wi-Fi{% if not apt.has_wifi %} — недоступно{% endif %}"></i>
