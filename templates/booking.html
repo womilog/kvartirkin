@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}Заявка на бронирование — {{ apartment.name }} — Квартиркинъ{% endblock %}
-{% block description %}Отправка заявки на бронирование квартиры {{ apartment.name }} в Геленджике.{% endblock %}
+{% block description %}Отправка заявки на бронирование квартиры {{ apartment.name }} в {% if apartment.city == 'Vorkuta' %}Воркуте{% else %}Геленджике{% endif %}.{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/booking.css' %}">
@@ -19,7 +19,7 @@
                 <div class="lg:col-span-3 reveal">
                     <div class="double-bezel">
                         <div class="double-bezel-inner p-6 sm:p-8">
-                            <h1 class="font-serif text-2xl font-medium text-sand-900 mb-2">Заявка на бронирование</h1>
+                            <h1 class="font-serif text-2xl text-sand-900 mb-2">Заявка на бронирование</h1>
                             <p class="text-sm text-sand-600 mb-6">
                                 Оплата на сайте не производится. После отправки заявки администратор
                                 свяжется с вами для подтверждения брони и согласования способа оплаты.
@@ -162,7 +162,7 @@
                                     {% endif %}
                                 </div>
 
-                                <button type="submit" class="magnetic-btn w-full py-4 bg-sand-800 text-white rounded-full font-medium hover:bg-sand-900 transition-colors flex items-center justify-center gap-2">
+                                <button type="submit" class="magnetic-btn w-full py-4 bg-sand-900 text-white rounded-full font-medium hover:bg-sand-800 flex items-center justify-center gap-2">
                                     <span>Отправить заявку</span>
                                     <i class="ph ph-paper-plane-tilt"></i>
                                 </button>
@@ -192,6 +192,14 @@
                                 </div>
                                 {% endif %}
                                 <div>
+                                    <span class="city-chip {% if apartment.city == 'Vorkuta' %}city-chip-vorkuta{% else %}city-chip-gelendzhik{% endif %} mb-1.5">
+                                        <i class="ph {% if apartment.city == 'Vorkuta' %}ph-snowflake{% else %}ph-sun-horizon{% endif %}"></i>
+                                        {{ apartment.get_city_display }}
+                                    </span>
+                                    <span class="city-chip {% if apartment.city == 'Vorkuta' %}city-chip-vorkuta{% else %}city-chip-gelendzhik{% endif %} mb-1.5">
+                                        <i class="ph {% if apartment.city == 'Vorkuta' %}ph-snowflake{% else %}ph-sun-horizon{% endif %}"></i>
+                                        {{ apartment.get_city_display }}
+                                    </span>
                                     <h4 class="font-medium text-sand-900 text-sm">{{ apartment.name }}</h4>
                                     <p class="text-xs text-sand-500 mt-1">{{ apartment.address }}</p>
                                     <div class="flex items-center gap-1 mt-1">
@@ -203,12 +211,12 @@
                             <div class="space-y-2 mb-4 text-sm">
                                 <div class="flex justify-between">
                                     <span class="text-sand-600">Цена за сутки</span>
-                                    <span class="font-medium text-sand-900">₽{{ apartment.price_per_day|floatformat:0 }}</span>
+                                    <span class="font-medium text-sand-900">{{ apartment.price_per_day|floatformat:0 }} ₽</span>
                                 </div>
                                 {% if apartment.pets_allowed %}
                                 <div class="flex justify-between">
                                     <span class="text-sand-600">Доп. за питомца</span>
-                                    <span class="font-medium text-sand-900">₽500/сутки</span>
+                                    <span class="font-medium text-sand-900">500 ₽ / сутки</span>
                                 </div>
                                 {% endif %}
                             </div>

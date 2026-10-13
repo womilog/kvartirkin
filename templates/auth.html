@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}Вход и регистрация — Квартиркинъ{% endblock %}
-{% block description %}Вход в личный кабинет или регистрация на сайте Квартиркинъ.{% endblock %}
+{% block description %}Вход в личный кабинет или регистрация на сайте Квартиркинъ — посуточная аренда квартир в Воркуте и Геленджике.{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
@@ -52,8 +52,8 @@
 
                 <!-- Форма входа -->
                 <div id="login-form" class="form-section {% if not show_register %}active{% endif %}">
-                    <h1 class="font-serif text-2xl font-medium text-sand-900 mb-2">С возвращением!</h1>
-                    <p class="text-sand-500 text-sm mb-6">Войдите в свой аккаунт, чтобы продолжить</p>
+                    <h1 class="font-serif text-2xl text-sand-900 mb-2">С возвращением!</h1>
+                    <p class="text-sand-500 text-sm mb-6">Войдите в аккаунт, чтобы отправлять заявки и видеть историю броней</p>
 
                     {% if login_error %}
                     <div class="mb-4 px-4 py-3 rounded-lg bg-red-50 text-red-700 border border-red-200 text-sm">
@@ -81,7 +81,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="magnetic-btn w-full py-3 bg-sand-800 text-white rounded-full font-medium hover:bg-sand-900 transition-colors flex items-center justify-center gap-2">
+                        <button type="submit" class="magnetic-btn w-full py-3 bg-sand-900 text-white rounded-full font-medium hover:bg-sand-800 flex items-center justify-center gap-2">
                             <span>Войти</span>
                             <i class="ph ph-arrow-right"></i>
                         </button>
@@ -90,8 +90,8 @@
 
                 <!-- Форма регистрации -->
                 <div id="register-form" class="form-section {% if show_register %}active{% endif %}">
-                    <h1 class="font-serif text-2xl font-medium text-sand-900 mb-2">Создать аккаунт</h1>
-                    <p class="text-sand-500 text-sm mb-6">Зарегистрируйтесь, чтобы бронировать квартиры</p>
+                    <h1 class="font-serif text-2xl text-sand-900 mb-2">Создать аккаунт</h1>
+                    <p class="text-sand-500 text-sm mb-6">Регистрация занимает минуту — после неё можно бронировать квартиры в Воркуте и Геленджике</p>
 
                     {% if register_error %}
                     <div class="mb-4 px-4 py-3 rounded-lg bg-red-50 text-red-700 border border-red-200 text-sm">
@@ -161,7 +161,7 @@
                             </span>
                         </label>
 
-                        <button type="submit" class="magnetic-btn w-full py-3 bg-sand-800 text-white rounded-full font-medium hover:bg-sand-900 transition-colors flex items-center justify-center gap-2">
+                        <button type="submit" class="magnetic-btn w-full py-3 bg-sand-900 text-white rounded-full font-medium hover:bg-sand-800 flex items-center justify-center gap-2">
                             <span>Зарегистрироваться</span>
                             <i class="ph ph-arrow-right"></i>
                         </button>
@@ -172,7 +172,7 @@
         </div>
 
         <p class="text-center text-sm text-sand-500 mt-6">
-            Нужна помощь? <a href="#" class="text-sea-600 hover:underline">Свяжитесь с нами</a>
+            Нужна помощь? <a href="https://t.me/kvartirkin_vorkuta" class="text-sea-600 hover:underline">Напишите нам в Telegram</a>
         </p>
     </div>
 </main>

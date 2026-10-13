@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Квартиркинъ — Посуточная аренда в Геленджике{% endblock %}</title>
-    <meta name="description" content="{% block description %}Премиальная посуточная аренда квартир в Геленджике. Комфортное проживание у моря.{% endblock %}">
+    <title>{% block title %}Квартиркинъ — Посуточная аренда квартир в Воркуте и Геленджике{% endblock %}</title>
+    <meta name="description" content="{% block description %}Посуточная аренда квартир в Воркуте и Геленджике без посредников. Чистые, полностью оборудованные апартаменты, бронирование напрямую у владельца.{% endblock %}">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,7 +13,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -122,8 +122,8 @@
                 <div>
                     <div class="font-serif text-2xl font-semibold text-white mb-4">Квартиркинъ</div>
                     <p class="text-sm leading-relaxed">
-                        Премиальная посуточная аренда в Геленджике.
-                        Ощутите уют дома у самого моря.
+                        Посуточная аренда квартир в Воркуте и Геленджике.
+                        Бронируйте напрямую у владельца — без комиссий и посредников.
                     </p>
                 </div>
                 <div>
@@ -135,14 +135,13 @@
                         <li><a href="{% url 'index' %}#contact" class="hover:text-white transition-colors">Контакты</a></li>
                     </ul>
                 </div>
-                <!-- <div>
-                    <h4 class="text-white font-medium mb-4">Информация</h4>
+                <div>
+                    <h4 class="text-white font-medium mb-4">Города</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white transition-colors">Правила проживания</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Политика конфиденциальности</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Договор оферты</a></li>
+                        <li><a href="{% url 'apartment_list' %}?city=Vorkuta" class="hover:text-white transition-colors">Квартиры в Воркуте</a></li>
+                        <li><a href="{% url 'apartment_list' %}?city=Gelendzhik" class="hover:text-white transition-colors">Квартиры в Геленджике</a></li>
                     </ul>
-                </div> -->
+                </div>
                 <div>
                     <h4 class="text-white font-medium mb-4">Социальные сети</h4>
                     <div class="flex gap-3">
@@ -156,10 +155,13 @@
                             <img src="{{ MEDIA_URL }}logo/vk-logo.png" alt="VK" class="w-4 h-4 object-contain brightness-0 invert opacity-60 group-hover:opacity-100 transition-opacity">
                         </a>
                     </div>
+                    <p class="text-sm leading-relaxed mt-6">
+                        Отвечаем ежедневно с 09:00 до 22:00.
+                    </p>
                 </div>
             </div>
             <div class="pt-8 border-t border-white/10 text-sm text-center">
-                © {{ current_year }} Квартиркинъ. Все права защищены.
+                © {{ current_year }} Квартиркинъ — посуточная аренда квартир в Воркуте и Геленджике. Все права защищены.
             </div>
         </div>
     </footer>
@@ -183,7 +185,7 @@
                         </div>
                         <div>
                             <h3 class="font-medium text-sand-900">Нейро-консультант</h3>
-                            <p class="text-xs text-sand-500">Задайте вопрос об аренде</p>
+                            <p class="text-xs text-sand-500">Воркута и Геленджик — спросите о чём угодно</p>
                         </div>
                     </div>
                     <button id="ai-modal-close" class="w-8 h-8 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 hover:bg-sand-200 transition-colors">
@@ -193,7 +195,7 @@
                 <div id="ai-chat-messages" class="h-64 overflow-y-auto space-y-4 mb-4 pr-2">
                     <div class="flex justify-start">
                         <div class="max-w-[80%] px-4 py-3 rounded-2xl bg-sand-100 text-sand-800 rounded-bl-md">
-                            <p class="text-sm">Здравствуйте! Я ваш виртуальный помощник. Чем могу помочь с выбором апартаментов в Геленджике?</p>
+                            <p class="text-sm">Здравствуйте! Я виртуальный помощник «Квартиркинъ». Помогу подобрать квартиру в Воркуте или Геленджике и расскажу о правилах проживания.</p>
                         </div>
                     </div>
                 </div>

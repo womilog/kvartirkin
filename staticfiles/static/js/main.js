@@ -191,9 +191,9 @@ function initAIAssistant() {
         const options = opts || {};
         const messageDiv = document.createElement('div');
         messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
-        const bubbleClasses = sender === 'user'
+                const bubbleClasses = sender === 'user'
             ? 'bg-sea-500 text-white rounded-br-md'
-            : 'bg-sand-100 text-sand-800 rounded-bl-md';
+            : 'bg-sand-100 text-sand-800 rounded-bl-md border border-sand-200';
         const degradedNote = options.degraded
             ? '<p class="text-[10px] mt-2 italic opacity-70">Упрощённый режим</p>'
             : '';
@@ -324,18 +324,22 @@ function initYandexMap(coords, address) {
         return;
     }
     
+        // Координаты всегда приходят из БД (apartment.latitude/longitude).
+    // Фоллбэк на Геленджик нужен лишь на случай отсутствия данных.
+    const fallbackCoords = [44.5622, 38.0848];
+
     ymaps.ready(function() {
         const map = new ymaps.Map('yandex-map', {
-            center: coords || [44.5622, 38.0848], // Геленджик по умолчанию
+            center: coords || fallbackCoords,
             zoom: 15,
             controls: ['zoomControl', 'fullscreenControl']
         });
-        
-        const placemark = new ymaps.Placemark(coords || [44.5622, 38.0848], {
+
+        const placemark = new ymaps.Placemark(coords || fallbackCoords, {
             balloonContent: address || 'Квартира Квартиркинъ'
         }, {
             preset: 'islands#icon',
-            iconColor: '#3BA8B3'
+            iconColor: '#3B63BF'
         });
         
         map.geoObjects.add(placemark);

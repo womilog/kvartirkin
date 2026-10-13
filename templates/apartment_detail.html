@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ apartment.name }} — Квартиркинъ{% endblock %}
+{% block title %}{{ apartment.name }} — посуточно в {% if apartment.city == 'Vorkuta' %}Воркуте{% else %}Геленджике{% endif %} — Квартиркинъ{% endblock %}
 {% block description %}{{ apartment.description|truncatewords:20 }}{% endblock %}
 
 {% block extra_head_scripts %}
@@ -60,25 +60,43 @@
                 </div>
 
                 <!-- Информация -->
-                <div class="reveal">
-                    <h1 class="font-serif text-3xl sm:text-4xl font-medium text-sand-900 mb-4">{{ apartment.name }}</h1>
+                                <div class="reveal">
+                    <div class="flex flex-wrap items-center gap-2 mb-4">
+                        <span class="city-chip {% if apartment.city == 'Vorkuta' %}city-chip-vorkuta{% else %}city-chip-gelendzhik{% endif %}">
+                            <i class="ph {% if apartment.city == 'Vorkuta' %}ph-snowflake{% else %}ph-sun-horizon{% endif %}"></i>
+                            {{ apartment.get_city_display }}
+                        </span>
+                        {% if is_available %}
+                            <span class="status-badge status-badge-free border border-sand-200">
+                                <i class="ph ph-circle-fill text-[7px]"></i>
+                                Свободно сейчас
+                            </span>
+                        {% else %}
+                            <span class="status-badge status-badge-busy border border-sand-200">
+                                <i class="ph ph-circle-fill text-[7px]"></i>
+                                Занято сейчас
+                            </span>
+                        {% endif %}
+                    </div>
 
-                    <p class="text-sand-600 mb-6 flex items-center gap-2">
-                        <i class="ph ph-map-pin text-sea-500"></i>
-                        {{ apartment.address }}, {{ apartment.get_city_display }}, {% if apartment.city == 'Gelendzhik' %}{{ apartment.distance_to_sea }} м до моря{% else %}{{ apartment.distance_to_center }} м до центра{% endif %}
+                    <h1 class="font-serif text-3xl sm:text-4xl text-sand-900 mb-4">{{ apartment.name }}</h1>
+
+                    <p class="text-sand-600 mb-6 flex items-start gap-2">
+                        <i class="ph ph-map-pin mt-1 text-sea-600"></i>
+                        <span>{{ apartment.address }}, {{ apartment.get_city_display }}{% if apartment.city == 'Gelendzhik' %}{% if apartment.distance_to_sea %} · {{ apartment.distance_to_sea }} до моря{% endif %}{% else %}{% if apartment.distance_to_center %} · {{ apartment.distance_to_center }} до центра{% endif %}{% endif %}</span>
                     </p>
 
-                    <div class="grid grid-cols-3 gap-4 mb-8">
+                                        <div class="grid grid-cols-3 gap-3 mb-8">
                         <div class="double-bezel"><div class="double-bezel-inner p-4 text-center">
-                            <i class="ph ph-bed text-2xl text-sea-500 mb-1"></i>
+                            <i class="ph ph-bed text-xl text-sea-600 mb-1"></i>
                             <div class="text-sm text-sand-600">{{ apartment.rooms }} комн.</div>
                         </div></div>
                         <div class="double-bezel"><div class="double-bezel-inner p-4 text-center">
-                            <i class="ph ph-ruler text-2xl text-sea-500 mb-1"></i>
+                            <i class="ph ph-ruler text-xl text-sea-600 mb-1"></i>
                             <div class="text-sm text-sand-600">{{ apartment.area }} м²</div>
                         </div></div>
                         <div class="double-bezel"><div class="double-bezel-inner p-4 text-center">
-                            <i class="ph ph-users text-2xl text-sea-500 mb-1"></i>
+                            <i class="ph ph-users text-xl text-sea-600 mb-1"></i>
                             <div class="text-sm text-sand-600">до {{ apartment.max_guests }} гостей</div>
                         </div></div>
                     </div>
@@ -87,9 +105,9 @@
                     <div class="double-bezel mb-8 sticky top-32">
                         <div class="double-bezel-inner p-6">
                             <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <span class="text-3xl font-semibold text-sand-900">₽{{ apartment.price_per_day|floatformat:0 }}</span>
-                                    <span class="text-sand-500">/ сутки</span>
+                                                                <div>
+                                    <span class="metric-value text-3xl">{{ apartment.price_per_day|floatformat:0 }} ₽</span>
+                                    <span class="text-sand-500">за сутки</span>
                                 </div>
                                 <input type="hidden" id="price-per-night" value="{{ apartment.price_per_day|floatformat:0 }}">
                             </div>
@@ -128,10 +146,13 @@
                                     </div>
                                 </div>
 
-                                <button type="submit" class="magnetic-btn w-full py-3 bg-sand-800 text-white rounded-full font-medium hover:bg-sand-900 transition-colors flex items-center justify-center gap-2">
+                                                                <button type="submit" class="magnetic-btn w-full py-3 bg-sand-900 text-white rounded-full font-medium hover:bg-sand-800 flex items-center justify-center gap-2">
                                     <span>Забронировать</span>
                                     <i class="ph ph-arrow-right"></i>
                                 </button>
+                                <p class="text-xs text-sand-500 text-center">
+                                    Оплата на сайте не взимается — заявку подтверждает администратор.
+                                </p>
                             </form>
                             {% else %}
                             <div class="text-center py-4">
@@ -211,7 +232,7 @@
                     </div>
                     <p class="text-sm text-sand-600 mt-3 flex items-center gap-2">
                         <i class="ph ph-map-pin text-sea-500"></i>
-                        {{ apartment.address }}, Геленджик
+                        {{ apartment.address }}, {{ apartment.get_city_display }}
                     </p>
                 </div>
             </div>
@@ -222,7 +243,7 @@
     <section class="py-12 px-4 sm:px-6 lg:px-8 xl:px-12">
         <div class="max-w-7xl mx-auto">
             <div class="flex items-center justify-between mb-8 reveal">
-                <h2 class="font-serif text-2xl font-medium text-sand-900">
+                                <h2 class="font-serif text-2xl text-sand-900">
                     Отзывы гостей
                     {% if review_count %}<span class="text-sand-500 text-lg">({{ review_count }})</span>{% endif %}
                     {% if avg_rating %}
@@ -237,7 +258,7 @@
             {% if user.is_authenticated %}
             <div class="double-bezel mb-10 reveal">
                 <div class="double-bezel-inner p-6">
-                    <h3 class="font-serif text-xl font-medium text-sand-900 mb-4">Оставить отзыв</h3>
+                    <h3 class="font-serif text-xl text-sand-900 mb-4">Оставить отзыв</h3>
                     <form id="review-form" method="post"
                           action="{% url 'add_review' apartment.slug %}"
                           class="space-y-4">
@@ -268,8 +289,8 @@
                         <p id="review-form-error" class="text-sm text-red-600 hidden"></p>
                         <p id="review-form-success" class="text-sm text-green-600 hidden">Спасибо за ваш отзыв!</p>
 
-                        <button type="submit"
-                                class="magnetic-btn px-6 py-3 bg-sand-800 text-white rounded-full font-medium hover:bg-sand-900 transition-colors flex items-center gap-2">
+                                                <button type="submit"
+                                class="magnetic-btn px-6 py-3 bg-sand-900 text-white rounded-full font-medium hover:bg-sand-800 flex items-center gap-2">
                             <span>Отправить отзыв</span>
                             <i class="ph ph-paper-plane-right"></i>
                         </button>
@@ -296,7 +317,7 @@
 
             <div id="reviews-empty" class="text-center py-12 text-sand-400 reveal {% if reviews %}hidden{% endif %}">
                 <i class="ph ph-chat-circle text-5xl mb-3"></i>
-                <p>Отзывов пока нет. Будьте первым!</p>
+                <p>Отзывов об этой квартире пока нет. Будьте первым!</p>
             </div>
         </div>
     </section>
