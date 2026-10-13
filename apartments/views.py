@@ -100,25 +100,32 @@ def _send_booking_request_email(reservation, request):
 def index(request):
     """Home page — show available apartments carousel."""
     from datetime import date
-    apartments = Apartment.objects.filter(is_active=True).order_by('name')
-
+    city = request.GET.get('city', '')
+    valid_cities = [c[0] for c in Apartment.City.choices]
+    apartments = Apartment.objects.filter(is_active=True)
+    if city in valid_cities:
+        apartments = apartments.filter(city=city)
+    apartments = apartments.order_by('name')
     # Add current availability to each apartment
-    today = date.today()
+    # today = date.today()
     apartments_with_availability = []
     for apt in apartments:
-        res_now = False
-        for res in apt.reservations.all():
-            if res.check_in <= today <= res.check_out:
-                res_now = f"Занято с {res.check_in.strftime('%d-%m-%Y')} по {res.check_out.strftime('%d-%m-%Y')}"
+        # res_now = False
+        # for res in apt.reservations.all():
+        #     if res.check_in <= today <= res.check_out:
+        #         # res_now = f"Занято с {res.check_in.strftime('%d-%m-%Y')} по {res.check_out.strftime('%d-%m-%Y')}"
+        #         res_now = True
 
-        apartments_with_availability.append({
+            apartments_with_availability.append({
             'apartment': apt,
             'is_available': apt.get_current_availability(),
-            'res_now': res_now,
+            # 'res_now': res_now,
         })
 
     context = {
         'apartments': apartments_with_availability,
+        'current_city': city if city in valid_cities else '',
+        'cities': Apartment.City.choices,
     }
     return render(request, 'index.html', context)
 
@@ -126,18 +133,25 @@ def index(request):
 def apartment_list(request):
     """List all active apartments."""
     from datetime import date
-    apartments = Apartment.objects.filter(is_active=True).order_by('name')
+    city = request.GET.get('city', '')
+    valid_cities = [c[0] for c in Apartment.City.choices]
+    apartments = Apartment.objects.filter(is_active=True)
+    if city in valid_cities:
+        apartments = apartments.filter(city=city)
+    apartments = apartments.order_by('name')
     
     # Add current availability to each apartment
     apartments_with_availability = []
     for apt in apartments:
-        apartments_with_availability.append({
+            apartments_with_availability.append({
             'apartment': apt,
             'is_available': apt.get_current_availability(),
         })
-    
+
     context = {
         'apartments': apartments_with_availability,
+        'current_city': city if city in valid_cities else '',
+        'cities': Apartment.City.choices,
     }
     return render(request, 'apartments.html', context)
 

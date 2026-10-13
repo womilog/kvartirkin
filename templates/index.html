@@ -103,14 +103,28 @@
                 </a>
             </div>
 
+            <!-- Фильтр по городам -->
+            <div class="flex flex-wrap gap-2 mb-8 reveal">
+                <a href="{% url 'index' %}"
+                   class="px-5 py-2.5 rounded-full text-sm font-medium transition-colors {% if not current_city %}bg-sand-800 text-white{% else %}bg-sand-100 text-sand-700 hover:bg-sand-200{% endif %}">
+                    Все города
+                </a>
+                {% for city_value, city_label in cities %}
+                <a href="?city={{ city_value }}"
+                   class="px-5 py-2.5 rounded-full text-sm font-medium transition-colors {% if current_city == city_value %}bg-sand-800 text-white{% else %}bg-sand-100 text-sand-700 hover:bg-sand-200{% endif %}">
+                    {{ city_label }}
+                </a>
+                {% endfor %}
+            </div>
+
             <!-- Карусель -->
-            <div class="carousel-container flex gap-6 overflow-x-auto pb-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 snap-x snap-mandatory reveal">
+            <div class="carousel-container flex items-stretch gap-6 overflow-x-auto pb-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 snap-x snap-mandatory reveal">
                 {% for item in apartments %}
                 {% with apt=item.apartment %}
-                <div class="carousel-item flex-shrink-0 w-[320px] sm:w-[380px]">
-                    <div class="double-bezel h-full">
-                        <div class="double-bezel-inner overflow-hidden">
-                            <div class="relative h-56 overflow-hidden">
+                <div class="carousel-item flex-shrink-0 w-[320px] sm:w-[380px] flex flex-col">
+                    <div class="double-bezel flex-1 flex flex-col">
+                        <div class="double-bezel-inner overflow-hidden flex flex-col flex-1">
+                            <div class="relative h-56 shrink-0 overflow-hidden">
                                 {% if apt.main_image %}
                                     <img src="{{ apt.main_image.image.url }}" alt="{{ apt.name }}"
                                          class="w-full h-full object-cover transition-transform duration-700 hover:scale-105">
@@ -120,16 +134,16 @@
                                     </div>
                                 {% endif %}
                                 {% if not item.is_available %}
-                                    {% if item.res_now %}
+                                    <!-- {% if item.res_now %}
                                     <div class="absolute top-3 left-3 px-3 py-1 bg-red-500 text-white text-xs font-semibold rounded-full">{{ item.res_now }}</div>
-                                    {% else %}
+                                    {% else %} -->
                                     <div class="absolute top-3 left-3 px-3 py-1 bg-red-500 text-white text-xs font-semibold rounded-full">Занято</div>
-                                    {% endif %}
+                                    <!-- {% endif %} -->
                                 {% else %}
                                     <div class="absolute top-3 left-3 px-3 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">Свободно</div>
                                 {% endif %}
                             </div>
-                            <div class="p-6">
+                            <div class="p-6 flex flex-col flex-1">
                                 <div class="flex items-start justify-between gap-4 mb-3">
                                     <h3 class="font-serif text-xl font-medium text-sand-900">{{ apt.name }}</h3>
                                     <div class="text-right flex-shrink-0">
@@ -139,22 +153,24 @@
                                 </div>
                                 <p class="text-sm text-sand-600 mb-4 flex items-center gap-1">
                                     <i class="ph ph-map-pin"></i>
-                                    {{ apt.address }}{% if apt.distance_to_sea %} — {{ apt.distance_to_sea }} до моря{% endif %}
+                                    {{ apt.address }}{% if apt.city != 'Vorkuta' %} — {{ apt.distance_to_sea }} до моря{% endif %}
                                 </p>
                                 <div class="flex flex-wrap gap-2 mb-4">
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.rooms }} комн.</span>
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.area }} м²</span>
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">до {{ apt.max_guests }} гостей</span>
-                                    <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">до центра {{ apt.distance_to_center }}</span>
+                                    {% if apt.distance_to_center %}<span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">до центра {{ apt.distance_to_center }}</span>{% endif %}
                                 </div>
                                 <ul class="amenity-list flex flex-wrap gap-2 mb-4 list-none p-0">
                                     <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.has_wifi %} amenity-unavailable{% endif %}"><i class="ph ph-wifi-high mr-1"></i><span class="amenity-label">Wi-Fi</span></li>
                                     <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.has_smart_tv %} amenity-unavailable{% endif %}"><i class="ph ph-television mr-1"></i><span class="amenity-label">Smart TV</span></li>
                                     <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.has_washing_machine %} amenity-unavailable{% endif %}"><i class="ph ph-washing-machine mr-1"></i><span class="amenity-label">Стиральная машина</span></li>
-                                    <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.has_ac %} amenity-unavailable{% endif %}"><i class="ph ph-snowflake mr-1"></i><span class="amenity-label">Кондиционер</span></li>
                                     <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.pets_allowed %} amenity-unavailable{% endif %}"><i class="ph ph-paw-print mr-1"></i><span class="amenity-label">Питомцы</span></li>
+                                    {% if apt.city != 'Vorkuta' %}
+                                    <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.has_ac %} amenity-unavailable{% endif %}"><i class="ph ph-snowflake mr-1"></i><span class="amenity-label">Кондиционер</span></li>
                                     <li class="amenity-tag amenity-list-item amenity-free-private-park px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.free_private_park %} amenity-unavailable{% endif %}"><i class="ph ph-car mr-1"></i><span class="amenity-label">Частная парковка</span></li>
                                     <li class="amenity-tag amenity-list-item amenity-near-pool px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.near_pool %} amenity-unavailable{% endif %}"><i class="ph ph-swimming-pool mr-1"></i><span class="amenity-label">Бассейн</span></li>
+                                    {% endif %}
                                     <li class="amenity-tag amenity-list-item amenity-smoking-allowed px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if apt.avaible_smoke == 'zapret' %} amenity-unavailable{% endif %}"><i class="ph ph-cigarette mr-1"></i><span class="amenity-label">Курение: {{ apt.get_avaible_smoke_display }}</span></li>
                                 </ul>
                                 <!-- <ul class="amenity-list flex flex-wrap gap-2 mb-4 list-none p-0">
@@ -162,7 +178,7 @@
                                     {% if apt.near_pool %}<li class="amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs"><i class="ph ph-swimming-pool mr-1"></i>Бассейн</li>{% endif %}
                                     {% if apt.avaible_smoke %}<li class="amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs"><i class="ph ph-cigarette mr-1"></i>Разрешено курить</li>{% endif %}
                                 </ul> -->
-                                <a href="{{ apt.get_absolute_url }}" class="magnetic-btn w-full flex items-center justify-center gap-2 px-6 py-3 bg-sand-800 text-white rounded-full font-medium text-sm hover:bg-sand-900 transition-colors">
+                                <a href="{{ apt.get_absolute_url }}" class="magnetic-btn mt-auto w-full flex items-center justify-center gap-2 px-6 py-3 bg-sand-800 text-white rounded-full font-medium text-sm hover:bg-sand-900 transition-colors">
                                     <span>Подробнее</span>
                                     <i class="ph ph-arrow-right"></i>
                                 </a>
