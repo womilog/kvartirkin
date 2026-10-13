@@ -73,7 +73,7 @@
                                 </div>
                                 <p class="text-sm text-sand-600 mb-3 flex items-center gap-1">
                                     <i class="ph ph-map-pin"></i>
-                                    {{ apt.address }}{% if apt.city != 'Vorkuta' %} — {{ apt.distance_to_sea }} до моря{% endif %}
+                                    {% if apt.city == 'Gelendzhik' %}{{ apt.distance_to_sea }} м до моря{% else %}{{ apt.distance_to_center }} м до центра{% endif %}
                                 </p>
                                 <div class="flex flex-wrap gap-2 mb-4">
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.rooms }} комн.</span>

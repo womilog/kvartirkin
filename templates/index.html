@@ -25,7 +25,7 @@
                 <div class="order-2 lg:order-1 reveal">
                     <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sea-50 border border-sea-200 text-sea-700 text-xs font-semibold uppercase tracking-widest mb-6">
                         <i class="ph ph-house-line"></i>
-                        Геленджик {{ current_year }}
+                        Воркута и Геленджик {{ current_year }}
                     </div>
                     <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl font-medium text-sand-900 leading-[1.1] mb-6">
                         Ощутите <span class="italic text-sea-600">уют</span> дома<br>у самого моря
@@ -146,20 +146,24 @@
                             <div class="p-6 flex flex-col flex-1">
                                 <div class="flex items-start justify-between gap-4 mb-3">
                                     <h3 class="font-serif text-xl font-medium text-sand-900">{{ apt.name }}</h3>
+                                    
                                     <div class="text-right flex-shrink-0">
                                         <div class="font-semibold text-sand-900">₽{{ apt.price_per_day|floatformat:0 }}</div>
                                         <div class="text-xs text-sand-500">/ сутки</div>
                                     </div>
                                 </div>
+                                <div class="flex items-start justify-between gap-4 mb-3">
+                                    <h4 class="font-serif text-xm font-medium text-sand-900">Город: {{ apt.get_city_display }}</h4>
+                                </div>
                                 <p class="text-sm text-sand-600 mb-4 flex items-center gap-1">
                                     <i class="ph ph-map-pin"></i>
-                                    {{ apt.address }}{% if apt.city != 'Vorkuta' %} — {{ apt.distance_to_sea }} до моря{% endif %}
+                                    {{ apt.address }}
                                 </p>
                                 <div class="flex flex-wrap gap-2 mb-4">
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.rooms }} комн.</span>
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{{ apt.area }} м²</span>
                                     <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">до {{ apt.max_guests }} гостей</span>
-                                    {% if apt.distance_to_center %}<span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">до центра {{ apt.distance_to_center }}</span>{% endif %}
+                                    <span class="px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs">{% if apt.city == 'Gelendzhik' %}{{ apt.distance_to_sea }} м до моря{% else %}{{ apt.distance_to_center }} м до центра{% endif %}</span>
                                 </div>
                                 <ul class="amenity-list flex flex-wrap gap-2 mb-4 list-none p-0">
                                     <li class="amenity-tag amenity-list-item px-2 py-1 rounded-md bg-sand-100 text-sand-600 text-xs{% if not apt.has_wifi %} amenity-unavailable{% endif %}"><i class="ph ph-wifi-high mr-1"></i><span class="amenity-label">Wi-Fi</span></li>

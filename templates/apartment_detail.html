@@ -65,7 +65,7 @@
 
                     <p class="text-sand-600 mb-6 flex items-center gap-2">
                         <i class="ph ph-map-pin text-sea-500"></i>
-                        {{ apartment.address }}{% if apartment.distance_to_sea %} — {{ apartment.distance_to_sea }} до моря{% endif %}
+                        {{ apartment.address }}, {{ apartment.get_city_display }}, {% if apartment.city == 'Gelendzhik' %}{{ apartment.distance_to_sea }} м до моря{% else %}{{ apartment.distance_to_center }} м до центра{% endif %}
                     </p>
 
                     <div class="grid grid-cols-3 gap-4 mb-8">
