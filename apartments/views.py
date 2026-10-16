@@ -231,6 +231,21 @@ def booking(request, slug):
                 if request.user.is_authenticated:
                     reservation.user = request.user
 
+                # Final server-side overlap check using correct formula:
+                # two ranges overlap when check_in < existing_check_out AND check_out > existing_check_in
+                occupied_reservations = apartment.reservations.filter(
+                    status__in=['pending', 'confirmed'],
+                    check_in__lt=reservation.check_out,
+                    check_out__gt=reservation.check_in,
+                )
+                if occupied_reservations.exists():
+                    messages.error(
+                        request,
+                        'Апартаменты забронированы на выбранные даты. '
+                        'Пожалуйста, выберите другие даты.',
+                    )
+                    return redirect('apartment_detail', slug=slug)
+
                 # Calculate total price
                 nights = (reservation.check_out - reservation.check_in).days
                 price_per_night = apartment.price_per_day

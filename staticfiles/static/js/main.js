@@ -481,5 +481,6 @@ window.Kvartirkin = {
     showNotification,
     initPhotoGallery,
     initApartmentsFilter,
-    initCommentLikes
+    initCommentLikes,
+    initComparisonSlider
 };
