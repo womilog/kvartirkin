@@ -43,7 +43,7 @@ class BookingForm(forms.ModelForm):
         widget=forms.DateInput(format='%d-%m-%Y',attrs={
             'type': 'date',
             'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
-            'placeholder': 'дд-мм-гггг'
+            'lang': 'ru',
         }),
     )
     check_out = forms.DateField(
@@ -51,6 +51,7 @@ class BookingForm(forms.ModelForm):
         widget=forms.DateInput(attrs={
             'type': 'date',
             'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+            'lang': 'ru',
         }),
     )
     guests = forms.ChoiceField(

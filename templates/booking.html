@@ -196,10 +196,6 @@
                                         <i class="ph {% if apartment.city == 'Vorkuta' %}ph-snowflake{% else %}ph-sun-horizon{% endif %}"></i>
                                         {{ apartment.get_city_display }}
                                     </span>
-                                    <span class="city-chip {% if apartment.city == 'Vorkuta' %}city-chip-vorkuta{% else %}city-chip-gelendzhik{% endif %} mb-1.5">
-                                        <i class="ph {% if apartment.city == 'Vorkuta' %}ph-snowflake{% else %}ph-sun-horizon{% endif %}"></i>
-                                        {{ apartment.get_city_display }}
-                                    </span>
                                     <h4 class="font-medium text-sand-900 text-sm">{{ apartment.name }}</h4>
                                     <p class="text-xs text-sand-500 mt-1">{{ apartment.address }}</p>
                                     <div class="flex items-center gap-1 mt-1">
@@ -244,6 +240,12 @@
     </section>
 
     {{ occupied_ranges_json|json_script:"occupied-ranges-data" }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr('#id_check_in', { locale: 'ru', dateFormat: 'd-m-Y', minDate: 'today' });
+            flatpickr('#id_check_out', { locale: 'ru', dateFormat: 'd-m-Y', minDate: 'today' });
+        });
+    </script>
     <script>
         (function () {
             const dataEl = document.getElementById('occupied-ranges-data');

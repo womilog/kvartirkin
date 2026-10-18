@@ -303,9 +303,12 @@ function calculateBookingTotal() {
     if (!checkIn || !checkOut || !totalDisplay) return;
     
     const updateTotal = () => {
-        const start = new Date(checkIn.value);
-        const end = new Date(checkOut.value);
-        
+        // Parse yyyy-mm-dd consistently (avoid timezone pitfalls).
+        const [y1, m1, d1] = checkIn.value.split('-').map(Number);
+        const [y2, m2, d2] = checkOut.value.split('-').map(Number);
+        const start = new Date(y1, m1 - 1, d1);
+        const end = new Date(y2, m2 - 1, d2);
+
         if (start && end && end > start) {
             const nights = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
             const total = nights * pricePerNight;
