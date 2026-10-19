@@ -2,10 +2,27 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-from .forms import CustomPasswordChangeForm
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
 from django.contrib import messages
+from django.urls import reverse
+from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
+import secrets
+
 from apartments.models import Reservation
-from .forms import RegistrationForm, LoginForm, ProfileEditForm
+from .forms import (
+    CustomPasswordChangeForm,
+    RegistrationForm,
+    LoginForm,
+    ProfileEditForm,
+    RequestPasswordResetForm,
+    ResetPasswordForm,
+)
+from .models import CustomUser, PasswordResetToken
 
 
 def auth_view(request):
@@ -117,3 +134,121 @@ def profile_view(request):
         'active_panel': active_panel,
     }
     return render(request, 'profile.html', context)
+
+
+def request_password_reset(request):
+    """Send a password reset link to the user's email."""
+    if request.method != 'POST':
+        return redirect('auth')
+
+    form = RequestPasswordResetForm(request.POST)
+    if not form.is_valid():
+        errors = []
+        for field_errors in form.errors.values():
+            errors.extend(field_errors)
+        register_error = errors[0] if errors else 'Укажите корректный email'
+        return redirect('auth') + '?tab=password_reset&error=' + register_error
+
+    email = form.cleaned_data['email']
+    user = CustomUser.objects.get(email__iexact=email)
+
+    # Invalidate previous unused tokens
+    PasswordResetToken.objects.filter(
+        user=user,
+        used=False,
+    ).update(used=True)
+
+    # Generate token
+    token = secrets.token_urlsafe(32)
+    reset_token = PasswordResetToken.objects.create(user=user, token=token)
+
+    # Build reset link
+    reset_url = request.build_absolute_uri(
+        reverse('password_reset_confirm', kwargs={
+            'uidb64': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': reset_token.token,
+        })
+    )
+
+    # Send email
+    subject = 'Восстановление пароля — Квартиркинъ'
+    message = (
+        f'Здравствуйте, {user.first_name}!\n\n'
+        f'Вы запросили восстановление пароля на сайте Квартиркинъ.\n'
+        f'Перейдите по следующей ссылке для создания нового пароля:\n'
+        f'{reset_url}\n\n'
+        f'Ссылка действительна в течение 1 часа.\n\n'
+        f'Если вы не запрашивали восстановление пароля, проигнорируйте это письмо.\n\n'
+        f'С уважением,\nКвартиркинъ'
+    )
+
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+    except Exception:
+        messages.error(request, 'Не удалось отправить письмо. Попробуйте позже.')
+        return redirect('auth')
+
+    messages.success(
+        request,
+        'Письмо с инструкциями по восстановлению пароля отправлено на ' + email,
+    )
+    return redirect('auth')
+
+
+def password_reset_confirm(request, uidb64, token):
+    """Allow the user to set a new password using the reset token."""
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        user = None
+
+    if user is None:
+        messages.error(request, 'Неверная ссылка для восстановления пароля.')
+        return redirect('auth')
+
+    try:
+        reset_token = PasswordResetToken.objects.get(
+            user=user,
+            token=token,
+        )
+    except PasswordResetToken.DoesNotExist:
+        reset_token = None
+
+    if reset_token is None:
+        messages.error(request, 'Неверный токен восстановления пароля.')
+        return redirect('auth')
+
+    if reset_token.is_expired():
+        messages.error(request, 'Ссылка для восстановления пароля истекла. Запросите новую.')
+        return redirect('auth')
+
+    if reset_token.used:
+        messages.error(request, 'Эта ссылка уже была использована. Запросите новую.')
+        return redirect('auth')
+
+    form = ResetPasswordForm(user=user)
+
+    if request.method == 'POST':
+        form = ResetPasswordForm(user=user, data=request.POST)
+        if form.is_valid():
+            user.set_password(form.cleaned_data['new_password'])
+            user.save()
+            reset_token.used = True
+            reset_token.save()
+            messages.success(
+                request,
+                'Пароль успешно изменён. Теперь вы можете войти в аккаунт.',
+            )
+            return redirect('auth')
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'password_reset_confirm.html', context)

@@ -81,6 +81,10 @@
                             </div>
                         </div>
 
+                        <div class="text-right">
+                            <a href="#" id="show-password-reset" class="text-xs text-sea-600 hover:underline">Забыли пароль?</a>
+                        </div>
+
                         <button type="submit" class="magnetic-btn w-full py-3 bg-sand-900 text-white rounded-full font-medium hover:bg-sand-800 flex items-center justify-center gap-2">
                             <span>Войти</span>
                             <i class="ph ph-arrow-right"></i>
@@ -129,6 +133,14 @@
                         </div>
 
                         <div>
+                            <label class="block text-sm text-sand-600 mb-1">Email *</label>
+                            {{ reg_form.email }}
+                            {% if reg_form.email.errors %}
+                                <p class="text-xs text-red-500 mt-1">{{ reg_form.email.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
                             <label class="block text-sm text-sand-600 mb-1">Пароль *</label>
                             <div class="relative">
                                 <input type="password" name="password1" required
@@ -164,6 +176,53 @@
                         <button type="submit" class="magnetic-btn w-full py-3 bg-sand-900 text-white rounded-full font-medium hover:bg-sand-800 flex items-center justify-center gap-2">
                             <span>Зарегистрироваться</span>
                             <i class="ph ph-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Форма восстановления пароля -->
+                <div id="password-reset-form" class="form-section">
+                    <h1 class="font-serif text-2xl text-sand-900 mb-2">Восстановление пароля</h1>
+                    <p class="text-sand-500 text-sm mb-6">Укажите email, который вы указали при регистрации. Мы отправим вам ссылку для создания нового пароля.</p>
+
+                    {% if messages %}
+                    <div class="mb-4 space-y-2">
+                        {% for message in messages %}
+                        <div class="px-4 py-3 rounded-lg text-sm
+                            {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200
+                            {% elif message.tags == 'success' %}bg-green-50 text-green-700 border border-green-200
+                            {% else %}bg-sea-50 text-sea-700 border border-sea-200{% endif %}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if register_error %}
+                    <div class="mb-4 px-4 py-3 rounded-lg bg-red-50 text-red-700 border border-red-200 text-sm">
+                        {{ register_error }}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" id="password-reset-action" class="space-y-4" novalidate>
+                        {% csrf_token %}
+
+                        <div>
+                            <label class="block text-sm text-sand-600 mb-1">Email *</label>
+                            <input type="email" name="email" required
+                                   class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all"
+                                   placeholder="you@example.com">
+                            <p class="text-xs text-sand-500 mt-1">Укажите email, который вы указали при регистрации</p>
+                        </div>
+
+                        <button type="submit" class="magnetic-btn w-full py-3 bg-sand-900 text-white rounded-full font-medium hover:bg-sand-800 flex items-center justify-center gap-2">
+                            <span>Отправить ссылку</span>
+                            <i class="ph ph-arrow-right"></i>
+                        </button>
+
+                        <button type="button" id="back-to-login" class="w-full py-3 bg-transparent text-sand-700 border border-sand-300 rounded-full font-medium hover:bg-sand-100 flex items-center justify-center gap-2">
+                            <i class="ph ph-arrow-left"></i>
+                            <span>Вернуться ко входу</span>
                         </button>
                     </form>
                 </div>
@@ -212,6 +271,53 @@
                 }
             });
         });
+
+        // Показать форму восстановления пароля
+        const showPasswordReset = document.getElementById('show-password-reset');
+        if (showPasswordReset) {
+            showPasswordReset.addEventListener('click', (e) => {
+                e.preventDefault();
+                tabBtns.forEach(b => b.classList.remove('active'));
+                formSections.forEach(section => section.classList.remove('active'));
+                document.getElementById('password-reset-form').classList.add('active');
+            });
+        }
+
+        // Вернуться ко входу из формы восстановления
+        const backToLogin = document.getElementById('back-to-login');
+        if (backToLogin) {
+            backToLogin.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                formSections.forEach(section => section.classList.remove('active'));
+                // Показать вкладку входа
+                const loginBtn = document.querySelector('[data-tab="login"]');
+                loginBtn.classList.add('active');
+                document.getElementById('login-form').classList.add('active');
+            });
+        }
+
+        // Установить правильный action для формы восстановления пароля
+        const passwordResetForm = document.getElementById('password-reset-action');
+        if (passwordResetForm) {
+            passwordResetForm.action = "{% url 'password_reset' %}";
+        }
+
+        // Если есть ошибка из URL, показать форму восстановления
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        const error = urlParams.get('error');
+        if (tab === 'password_reset') {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            formSections.forEach(section => section.classList.remove('active'));
+            document.getElementById('password-reset-form').classList.add('active');
+            if (error) {
+                const container = document.getElementById('password-reset-form');
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'mb-4 px-4 py-3 rounded-lg bg-red-50 text-red-700 border border-red-200 text-sm';
+                errorDiv.textContent = decodeURIComponent(error);
+                container.insertBefore(errorDiv, container.querySelector('form'));
+            }
+        }
     });
 </script>
 {% endblock %}

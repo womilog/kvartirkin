@@ -31,7 +31,7 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'phone']
+        fields = ['first_name', 'last_name', 'phone', 'email']
         widgets = {
             'first_name': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
@@ -44,6 +44,10 @@ class RegistrationForm(forms.ModelForm):
             'phone': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
                 'placeholder': '+7 (___) ___-__-__',
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+                'placeholder': 'you@example.com',
             }),
         }
 
@@ -83,6 +87,14 @@ class RegistrationForm(forms.ModelForm):
         return password
 
         
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not email:
+            raise forms.ValidationError('Email обязателен для заполнения')
+        if CustomUser.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError('Пользователь с таким email уже зарегистрирован')
+        return email
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone', '')
@@ -353,3 +365,84 @@ class LoginForm(AuthenticationForm):
             # Normalize to +7XXXXXXXXXX format
             return '+7' + digits[1:]
         return phone
+
+
+class RequestPasswordResetForm(forms.Form):
+    """Form for requesting password reset via email."""
+    email = forms.EmailField(
+        label='Email',
+        widget=forms.EmailInput(attrs={
+            'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+            'placeholder': 'you@example.com',
+        }),
+    )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not CustomUser.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(
+                'Пользователь с таким email не найден. '
+                'Убедитесь, что вы указали email при регистрации.'
+            )
+        return email
+
+
+class ResetPasswordForm(forms.Form):
+    """Form for resetting password with token."""
+    new_password = forms.CharField(
+        label='Новый пароль',
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+            'placeholder': 'Минимум 8 символов',
+        }),
+        min_length=8,
+    )
+    new_password_confirm = forms.CharField(
+        label='Подтверждение пароля',
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+            'placeholder': 'Повторите пароль',
+        }),
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_new_password(self):
+        password = self.cleaned_data.get('new_password', '')
+
+        if len(password) > 128:
+            raise forms.ValidationError('Пароль не должен превышать 128 символов')
+
+        if not re.search(r'[0-9]', password):
+            raise forms.ValidationError('Пароль должен содержать хотя бы одну цифру')
+
+        if not re.search(r'[A-Za-z]', password):
+            raise forms.ValidationError('Пароль должен содержать хотя бы одну латинскую букву')
+
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>_\-+=/\[\]\\~`]', password):
+            raise forms.ValidationError('Пароль должен содержать хотя бы один специальный символ')
+
+        if re.search(r'[А-Яа-яЁё]', password):
+            raise forms.ValidationError('Пароль не должен содержать буквы кириллицы')
+
+        weak_passwords = {
+            '12345678', '123456789', '1234567890',
+            'qwerty123', 'qwerty1234', 'password123',
+            'admin123', 'root123', 'test123',
+            '11111111', '00000000',
+            'password', 'qwerty', 'letmein',
+        }
+        if password.lower() in weak_passwords:
+            raise forms.ValidationError('Пароль слишком простой, выберите более сложный')
+
+        return password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        new_password_confirm = cleaned_data.get('new_password_confirm')
+        if new_password and new_password_confirm and new_password != new_password_confirm:
+            raise forms.ValidationError('Пароли не совпадают')
+        return cleaned_data

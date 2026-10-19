@@ -48,14 +48,13 @@ class CustomUser(AbstractUser):
     )
     email = models.EmailField(
         'Email',
-        blank=True,
-        null=True,
+        unique=True,
     )
     first_name = models.CharField('Имя', max_length=150)
     last_name = models.CharField('Фамилия', max_length=150)
 
     USERNAME_FIELD = 'phone'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
 
     objects = CustomUserManager()
 
@@ -65,3 +64,34 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name} ({self.phone})'
+
+
+class PasswordResetToken(models.Model):
+    """Token for password reset via email."""
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='password_reset_tokens',
+    )
+    token = models.CharField('Token', max_length=255, unique=True)
+    created_at = models.DateTimeField('Created at', auto_now_add=True)
+    expires_at = models.DateTimeField('Expires at')
+    used = models.BooleanField('Used', default=False)
+
+    class Meta:
+        verbose_name = 'Токен сброса пароля'
+        verbose_name_plural = 'Токены сброса пароля'
+
+    def __str__(self):
+        status = 'used' if self.used else 'active'
+        return f'{self.user.email} — {status}'
+
+    def is_expired(self):
+        from django.utils import timezone
+        return timezone.now() >= self.expires_at
+
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            from django.utils.timezone import now, timedelta
+            self.expires_at = now() + timedelta(hours=1)
+        super().save(*args, **kwargs)
