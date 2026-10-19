@@ -183,29 +183,23 @@
                             <div class="space-y-4 max-w-md">
                                 <div>
                                     <label class="block text-sm text-sand-600 mb-1">Текущий пароль</label>
-                                    <input type="password" name="old_password" required
-                                           class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all"
-                                           placeholder="••••••••">
+                                    {{ password_form.old_password }}
                                     {% if password_form.old_password.errors %}
                                         <p class="text-xs text-red-500 mt-1">{{ password_form.old_password.errors.0 }}</p>
                                     {% endif %}
                                 </div>
                                 <div>
                                     <label class="block text-sm text-sand-600 mb-1">Новый пароль</label>
-                                    <input type="password" name="new_password1" required
-                                           class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all"
-                                           placeholder="Минимум 8 символов">
-                                    {% if password_form.new_password1.errors %}
-                                        <p class="text-xs text-red-500 mt-1">{{ password_form.new_password1.errors.0 }}</p>
+                                    {{ password_form.new_password }}
+                                    {% if password_form.new_password.errors %}
+                                        <p class="text-xs text-red-500 mt-1">{{ password_form.new_password.errors.0 }}</p>
                                     {% endif %}
                                 </div>
                                 <div>
                                     <label class="block text-sm text-sand-600 mb-1">Подтверждение нового пароля</label>
-                                    <input type="password" name="new_password2" required
-                                           class="w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all"
-                                           placeholder="Повторите новый пароль">
-                                    {% if password_form.new_password2.errors %}
-                                        <p class="text-xs text-red-500 mt-1">{{ password_form.new_password2.errors.0 }}</p>
+                                    {{ password_form.new_password_confirm }}
+                                    {% if password_form.new_password_confirm.errors %}
+                                        <p class="text-xs text-red-500 mt-1">{{ password_form.new_password_confirm.errors.0 }}</p>
                                     {% endif %}
                                 </div>
                             </div>

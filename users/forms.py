@@ -47,6 +47,43 @@ class RegistrationForm(forms.ModelForm):
             }),
         }
 
+    def clean_password(self):
+        password = self.cleaned_data.get('password', '')
+
+        if len(password) > 128:
+            raise forms.ValidationError('Пароль не должен превышать 128 символов')
+
+        # Check for digits
+        if not re.search(r'[0-9]', password):
+            raise forms.ValidationError('Пароль должен содержать хотя бы одну цифру')
+
+        # Check for Latin letters
+        if not re.search(r'[A-Za-z]', password):
+            raise forms.ValidationError('Пароль должен содержать хотя бы одну латинскую букву')
+
+        # Check for special characters
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>_\-+=/\[\]\\~`]', password):
+            raise forms.ValidationError('Пароль должен содержать хотя бы один специальный символ')
+
+        # Check for Cyrillic letters (not allowed)
+        if re.search(r'[А-Яа-яЁё]', password):
+            raise forms.ValidationError('Пароль не должен содержать буквы кириллицы')
+
+        # Check for common/weak passwords
+        weak_passwords = {
+            '12345678', '123456789', '1234567890',
+            'qwerty123', 'qwerty1234', 'password123',
+            'admin123', 'root123', 'test123',
+            '11111111', '00000000',
+            'password', 'qwerty', 'letmein',
+        }
+        if password.lower() in weak_passwords:
+            raise forms.ValidationError('Пароль слишком простой, выберите более сложный')
+
+        return password
+
+        
+
     def clean_phone(self):
         phone = self.cleaned_data.get('phone', '')
         # Strip all non-digit characters
@@ -83,6 +120,22 @@ class RegistrationForm(forms.ModelForm):
 
 class ProfileEditForm(forms.ModelForm):
     """Form for editing user profile information."""
+    password = forms.CharField(
+        label='Новый пароль',
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+            'placeholder': 'Оставьте пустым, если не меняете пароль',
+        }),
+        required=False,
+    )
+    password_confirm = forms.CharField(
+        label='Подтверждение нового пароля',
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+            'placeholder': 'Повторите новый пароль',
+        }),
+        required=False,
+    )
 
     class Meta:
         model = CustomUser
@@ -112,6 +165,51 @@ class ProfileEditForm(forms.ModelForm):
             }),
         }
 
+    def clean_password(self):
+        password = self.cleaned_data.get('password', '')
+
+        # If password is empty, skip validation (user not changing password)
+        if not password:
+            return password
+
+        if len(password) < 8:
+            raise forms.ValidationError('Пароль не должен быть меньше 8 символов')
+        
+        if len(password) > 128:
+            raise forms.ValidationError('Пароль не должен превышать 128 символов')
+
+        if not re.search(r'[0-9]', password):
+            raise forms.ValidationError('Пароль должен содержать хотя бы одну цифру')
+
+        if not re.search(r'[A-Za-z]', password):
+            raise forms.ValidationError('Пароль должен содержать хотя бы одну латинскую букву')
+
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>_\-+=/\[\]\\~`]', password):
+            raise forms.ValidationError('Пароль должен содержать хотя бы один специальный символ')
+
+        if re.search(r'[А-Яа-яЁё]', password):
+            raise forms.ValidationError('Пароль не должен содержать буквы кириллицы')
+
+        weak_passwords = {
+            '12345678', '123456789', '1234567890',
+            'qwerty123', 'qwerty1234', 'password123',
+            'admin123', 'root123', 'test123',
+            '11111111', '00000000',
+            'password', 'qwerty', 'letmein',
+        }
+        if password.lower() in weak_passwords:
+            raise forms.ValidationError('Пароль слишком простой, выберите более сложный')
+
+        return password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        password_confirm = cleaned_data.get('password_confirm')
+        if password and password_confirm and password != password_confirm:
+            raise forms.ValidationError('Новые пароли не совпадают')
+        return cleaned_data
+
     def clean_phone(self):
         phone = self.cleaned_data.get('phone', '')
         digits = re.sub(r'\D', '', phone)
@@ -137,11 +235,97 @@ class ProfileEditForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        # Keep username in sync with phone (AbstractUser still has unique username)
         user.username = self.cleaned_data['phone']
+        password = self.cleaned_data.get('password')
+        if password:
+            user.set_password(password)
         if commit:
             user.save()
         return user
+
+
+class CustomPasswordChangeForm(forms.Form):
+    """Form for changing password with custom validation."""
+    old_password = forms.CharField(
+        label='Текущий пароль',
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+            'placeholder': '••••••••',
+        }),
+        required=True,
+    )
+    new_password = forms.CharField(
+        label='Новый пароль',
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+            'placeholder': 'Минимум 8 символов',
+        }),
+        required=True,
+    )
+    new_password_confirm = forms.CharField(
+        label='Подтверждение нового пароля',
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
+            'placeholder': 'Повторите новый пароль',
+        }),
+        required=True,
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean_old_password(self):
+        old_password = self.cleaned_data.get('old_password', '')
+        if not self.user.check_password(old_password):
+            raise forms.ValidationError('Неверный текущий пароль')
+        return old_password
+
+    def clean_new_password(self):
+        password = self.cleaned_data.get('new_password', '')
+
+        if len(password) < 8:
+            raise forms.ValidationError('Пароль не должен быть меньше 8 символов')
+
+        if len(password) > 128:
+            raise forms.ValidationError('Пароль не должен превышать 128 символов')
+
+        if not re.search(r'[0-9]', password):
+            raise forms.ValidationError('Пароль должен содержать хотя бы одну цифру')
+
+        if not re.search(r'[A-Za-z]', password):
+            raise forms.ValidationError('Пароль должен содержать хотя бы одну латинскую букву')
+
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>_\-+=/\[\]\\~`]', password):
+            raise forms.ValidationError('Пароль должен содержать хотя бы один специальный символ')
+
+        if re.search(r'[А-Яа-яЁё]', password):
+            raise forms.ValidationError('Пароль не должен содержать буквы кириллицы')
+
+        weak_passwords = {
+            '12345678', '123456789', '1234567890',
+            'qwerty123', 'qwerty1234', 'password123',
+            'admin123', 'root123', 'test123',
+            '11111111', '00000000',
+            'password', 'qwerty', 'letmein',
+        }
+        if password.lower() in weak_passwords:
+            raise forms.ValidationError('Пароль слишком простой, выберите более сложный')
+
+        return password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        new_password_confirm = cleaned_data.get('new_password_confirm')
+        if new_password and new_password_confirm and new_password != new_password_confirm:
+            raise forms.ValidationError('Новые пароли не совпадают')
+        return cleaned_data
+
+    def save(self):
+        self.user.set_password(self.cleaned_data['new_password'])
+        self.user.save()
+        return self.user
 
 
 class LoginForm(AuthenticationForm):
