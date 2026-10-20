@@ -140,11 +140,18 @@ textarea:focus-visible {
 /* Нейро-консультант кнопка */
 .ai-assistant {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
+    bottom: 16px;
+    right: 16px;
     z-index: 100;
     border: none;
     animation: pulse-soft 3.5s ease-in-out infinite;
+}
+
+@media (min-width: 640px) {
+    .ai-assistant {
+        bottom: 24px;
+        right: 24px;
+    }
 }
 
 @keyframes pulse-soft {
