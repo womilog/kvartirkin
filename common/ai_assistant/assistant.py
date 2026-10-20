@@ -14,7 +14,7 @@ Flow per user message:
 4. If anything goes wrong with the LLM (quota, network, rate-limit), build
    a deterministic fallback answer from the same RAG hits.
 
-The class is stateless across requests â€” conversation history is supplied
+The class is stateless across requests — conversation history is supplied
 by the caller (currently the Django session, see ``views.py``).
 """
 
@@ -77,7 +77,7 @@ class Assistant:
         user_message = (user_message or "").strip()
         if not user_message:
             return AssistantReply(
-                text="ÐŸÐ¾Ð¶Ð°Ð»ÑƒÐ¹ÑÑ‚Ð°, Ð½Ð°Ð¿Ð¸ÑˆÐ¸Ñ‚Ðµ Ð²Ð¾Ð¿Ñ€Ð¾Ñ â€” Ñ Ð¿Ð¾ÑÑ‚Ð°Ñ€Ð°ÑŽÑÑŒ Ð¿Ð¾Ð¼Ð¾Ñ‡ÑŒ.",
+                text="Пожалуйста, напишите вопрос — я постараюсь помочь.",
                 degraded=False,
                 reason=None,
                 sources=[],
@@ -87,8 +87,8 @@ class Assistant:
             logger.info("AI assistant disabled via settings")
             return AssistantReply(
                 text=(
-                    "ÐÐµÐ¹Ñ€Ð¾-ÐºÐ¾Ð½ÑÑƒÐ»ÑŒÑ‚Ð°Ð½Ñ‚ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ð¾ Ð¾Ñ‚ÐºÐ»ÑŽÑ‡Ñ‘Ð½ Ð°Ð´Ð¼Ð¸Ð½Ð¸ÑÑ‚Ñ€Ð°Ñ‚Ð¾Ñ€Ð¾Ð¼. "
-                    "Ð¡Ð²ÑÐ¶Ð¸Ñ‚ÐµÑÑŒ Ñ Ð½Ð°Ð¼Ð¸ Ñ‡ÐµÑ€ÐµÐ· ÐºÐ¾Ð½Ñ‚Ð°ÐºÑ‚Ñ‹ Ð² Ð¿Ð¾Ð´Ð²Ð°Ð»Ðµ ÑÐ°Ð¹Ñ‚Ð°."
+                    "Нейро-консультант временно отключён администратором. "
+                    "Свяжитесь с нами через контакты в подвале сайта."
                 ),
                 degraded=True,
                 reason="disabled",

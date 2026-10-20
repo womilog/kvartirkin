@@ -66,19 +66,17 @@ FAQ: list[tuple[str, str]] = [
     (
         "Можно ли с питомцем?",
         "В некоторых квартирах разрешено проживание с питомцем — это указано "
-        "в карточке квартиры. При бронировании отметьте опцию «с питомцем», "
-        "к стоимости добавляется 500 ₽ за сутки.",
+        "в карточке квартиры.",
     ),
     (
         "Как отменить или изменить бронирование?",
         "Откройте раздел «Профиль» — там перечислены ваши бронирования и "
-        "их статусы. Для отмены или изменения дат свяжитесь с "
-        "администратором: контакты есть в подвале сайта.",
+        "их статусы. Для отмены нажмите на кнопку отмены соответствующего бронирования.",
     ),
     (
         "Где находятся апартаменты?",
-        "Все квартиры расположены в Геленджике. Точный адрес и расстояние "
-        "до моря указаны на странице каждой квартиры.",
+        "Все квартиры расположены в городах Геленджик и Воркута. Точный адрес "
+        "указаны на странице каждой квартиры.",
     ),
     (
         "Что такое статус заявки?",
@@ -166,6 +164,15 @@ def _apartment_to_text(apt) -> str:
     keywords ("wi-fi", "кондиционер", "бассейн"…) and so the LLM has all
     facts it might be asked about in one place.
     """
+    # Map of avaible_smoke internal values to human-readable labels.
+    # Matches Apartment.Smoke choices: zapret, balcony, entrance.
+    smoke_labels = {
+        "zapret": "курение запрещено",
+        "balcony": "курение на балконе",
+        "entrance": "курение в подъезде",
+    }
+    smoke_label = smoke_labels.get(apt.avaible_smoke, apt.avaible_smoke)
+
     amenities = []
     if apt.has_wifi:
         amenities.append("Wi-Fi")
@@ -181,22 +188,24 @@ def _apartment_to_text(apt) -> str:
         amenities.append("бесплатная частная парковка")
     if apt.near_pool:
         amenities.append("открытый бассейн рядом")
-    if apt.avaible_smoke:
-        amenities.append("разрешено курить")
     amenities_str = ", ".join(amenities) if amenities else "без особых удобств"
 
-    distance = apt.distance_to_sea or "не указано"
+    distance_to_sea = apt.distance_to_sea or "не указано"
+    distance_to_center = apt.distance_to_center or "не указано"
     booking_state = (
         "бронирование открыто" if apt.bookings_enabled else "бронирование временно закрыто"
     )
 
     return (
         f"Квартира: {apt.name}.\n"
+        f"Город: {apt.city}.\n"
         f"Адрес: {apt.address}.\n"
         f"Комнат: {apt.rooms}; площадь: {apt.area} м²; "
         f"максимум гостей: {apt.max_guests}.\n"
         f"Цена за сутки: {int(apt.price_per_day)} ₽.\n"
-        f"Расстояние до моря: {distance}.\n"
+        f"Расстояние до моря: {distance_to_sea}.\n"
+        f"Расстояние до центра: {distance_to_center}.\n"
+        f"Курение: {smoke_label}.\n"
         f"Удобства: {amenities_str}.\n"
         f"Статус: {booking_state}.\n"
         f"Описание: {apt.description}"
