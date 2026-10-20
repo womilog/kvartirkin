@@ -303,9 +303,9 @@ function calculateBookingTotal() {
     if (!checkIn || !checkOut || !totalDisplay) return;
     
     const updateTotal = () => {
-        // Parse yyyy-mm-dd consistently (avoid timezone pitfalls).
-        const [y1, m1, d1] = checkIn.value.split('-').map(Number);
-        const [y2, m2, d2] = checkOut.value.split('-').map(Number);
+        // Parse dd-mm-yyyy (flatpickr 'd-m-Y' format).
+        const [d1, m1, y1] = checkIn.value.split('-').map(Number);
+        const [d2, m2, y2] = checkOut.value.split('-').map(Number);
         const start = new Date(y1, m1 - 1, d1);
         const end = new Date(y2, m2 - 1, d2);
 

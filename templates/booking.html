@@ -244,6 +244,23 @@
         document.addEventListener('DOMContentLoaded', function() {
             flatpickr('#id_check_in', { locale: 'ru', dateFormat: 'd-m-Y', minDate: 'today' });
             flatpickr('#id_check_out', { locale: 'ru', dateFormat: 'd-m-Y', minDate: 'today' });
+
+            // Convert flatpickr dd-mm-yyyy values to yyyy-mm-dd before form submit.
+            const form = document.getElementById('booking-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const ci = document.getElementById('id_check_in');
+                    const co = document.getElementById('id_check_out');
+                    if (ci && ci.value) {
+                        const parts = ci.value.split('-');
+                        ci.value = parts[2] + '-' + parts[1] + '-' + parts[0];
+                    }
+                    if (co && co.value) {
+                        const parts = co.value.split('-');
+                        co.value = parts[2] + '-' + parts[1] + '-' + parts[0];
+                    }
+                });
+            }
         });
     </script>
     <script>
@@ -266,15 +283,39 @@
             checkInEl.min = today;
             checkOutEl.min = today;
 
+            // Parse both 'dd-mm-yyyy' (flatpickr) and 'yyyy-mm-dd' (JSON/DB) into Date objects.
+            function parseDate(str) {
+                if (!str) return null;
+                // Try dd-mm-yyyy first (flatpickr output).
+                if (/^\d{2}-\d{2}-\d{4}$/.test(str)) {
+                    const [d, m, y] = str.split('-').map(Number);
+                    return new Date(y, m - 1, d);
+                }
+                // Fallback: yyyy-mm-dd (ISO / DB format).
+                const [y, m, d] = str.split('-').map(Number);
+                return new Date(y, m - 1, d);
+            }
+
             function overlaps(aStart, aEnd, bStart, bEnd) {
-                // Half-open intervals: [aStart, aEnd) vs [bStart, bEnd)
-                return aStart < bEnd && aEnd > bStart;
+                const s1 = parseDate(aStart);
+                const e1 = parseDate(aEnd);
+                const s2 = parseDate(bStart);
+                const e2 = parseDate(bEnd);
+                if (!s1 || !e1 || !s2 || !e2) return false;
+                // Half-open intervals: [s1, e1) vs [s2, e2)
+                return s1 < e2 && e1 > s2;
             }
 
             function validate() {
                 const ci = checkInEl.value;
                 const co = checkOutEl.value;
-                if (!ci || !co || co <= ci) {
+                if (!ci || !co) {
+                    warningEl.classList.add('hidden');
+                    return;
+                }
+                const ciDate = parseDate(ci);
+                const coDate = parseDate(co);
+                if (!ciDate || !coDate || coDate <= ciDate) {
                     warningEl.classList.add('hidden');
                     return;
                 }

@@ -94,6 +94,85 @@ def _send_booking_request_email(reservation, request):
             reservation.pk, exc,
         )
 
+def _send_cancellation_email(reservation, request):
+    """Send a cancellation notification to the landlord.
+
+    The email is plain-text by default; if a template exists it is also
+    rendered as HTML. Failures are logged but never block the user flow.
+    """
+    apartment = reservation.apartment
+    subject = (
+        f'Заявка отменена: {apartment.name} '
+        f'({reservation.check_in:%d.%m.%Y} — {reservation.check_out:%d.%m.%Y})'
+    )
+    admin_url = request.build_absolute_uri(
+        reverse('admin:apartments_reservation_change', args=[reservation.pk])
+    )
+    nights = (reservation.check_out - reservation.check_in).days
+
+    context = {
+        'reservation': reservation,
+        'apartment': apartment,
+        'nights': nights,
+        'admin_url': admin_url,
+    }
+
+    body_lines = [
+        'Гость отменил заявку на бронирование.',
+        '',
+        f'Апартаменты: {apartment.name}',
+        f'Адрес: {apartment.address}',
+        '',
+        f'Заезд:  {reservation.check_in:%d.%m.%Y}',
+        f'Выезд:  {reservation.check_out:%d.%m.%Y}',
+        f'Ночей:  {nights}',
+        f'Гостей: {reservation.guests}'
+        f'{" (с питомцем)" if reservation.has_pet else ""}',
+        '',
+        'Гость:',
+        f'  Имя:     {reservation.first_name} {reservation.last_name}',
+        f'  Телефон: {reservation.phone}',
+    ]
+    if reservation.user_id and getattr(reservation.user, 'email', ''):
+        body_lines.append(f'  Email:   {reservation.user.email}')
+    if reservation.comment:
+        body_lines += ['', 'Комментарий гостя:', reservation.comment]
+    body_lines += [
+        '',
+        f'Статус изменён на: Отменено',
+        '',
+        f'Детали в админ-панели: {admin_url}',
+        '',
+        'Просьба: свяжитесь с гостем по телефону для уточнения деталей.',
+    ]
+    text_body = '\n'.join(body_lines)
+
+    try:
+        msg = EmailMultiAlternatives(
+            subject=subject,
+            body=text_body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[settings.LANDLORD_EMAIL],
+            reply_to=[reservation.user.email] if (
+                reservation.user_id and getattr(reservation.user, 'email', '')
+            ) else None,
+        )
+        # Attach HTML version if a template is provided.
+        try:
+            html_body = render_to_string(
+                'emails/cancellation_request.html', context
+            )
+            msg.attach_alternative(html_body, 'text/html')
+        except Exception:
+            pass
+        msg.send(fail_silently=False)
+    except Exception as exc:  # noqa: BLE001
+        logger.exception(
+            'Failed to send cancellation email for reservation #%s: %s',
+            reservation.pk, exc,
+        )
+
+
 # utc_zone = pytz.utc
 # moscow_tz = pytz.timezone('Europe/Moscow')
 
@@ -415,3 +494,38 @@ def check_availability(request, slug):
             'available': False,
             'error': 'Выбранные даты уже заняты'
         })
+
+
+@login_required
+def cancel_reservation(request, reservation_id):
+    """Allow a user to cancel their reservation (pending or confirmed only)."""
+    reservation = get_object_or_404(
+        Reservation, pk=reservation_id, user=request.user
+    )
+
+    if reservation.status not in ('pending', 'confirmed'):
+        messages.warning(
+            request,
+            'Эту заявку нельзя отменить — она уже отменена или отклонена.',
+        )
+        return redirect('profile')
+
+    if request.method == 'POST':
+        reservation.status = 'cancelled'
+        reservation.save()
+
+        # Notify the landlord by email
+        _send_cancellation_email(reservation, request)
+
+        messages.success(
+            request,
+            'Ваша заявка отменена. Администратор свяжется с вами для уточнения деталей. '
+            'Пожалуйста, позвоните админу и сообщите об отмене бронирования.',
+        )
+        return redirect('profile')
+
+    # GET — show confirmation page/modal context
+    context = {
+        'reservation': reservation,
+    }
+    return render(request, 'cancel_confirm.html', context)

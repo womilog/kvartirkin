@@ -282,11 +282,33 @@
                                                 <i class="ph ph-check-circle"></i>
                                                 {{ r.get_status_display }}
                                             </span>
+                                            {% if r.user_id %}
+                                            <form method="post" action="{% url 'cancel_reservation' r.pk %}" class="inline">
+                                                {% csrf_token %}
+                                                <button type="button"
+                                                        onclick="openCancelModal({{ r.pk }})"
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-medium border border-red-200 hover:bg-red-100 transition-colors">
+                                                    <i class="ph ph-prohibit"></i>
+                                                    Отменить
+                                                </button>
+                                            </form>
+                                            {% endif %}
                                         {% elif r.status == 'pending' %}
                                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-medium border border-amber-200">
                                                 <i class="ph ph-hourglass"></i>
                                                 {{ r.get_status_display }}
                                             </span>
+                                            {% if r.user_id %}
+                                            <form method="post" action="{% url 'cancel_reservation' r.pk %}" class="inline">
+                                                {% csrf_token %}
+                                                <button type="button"
+                                                        onclick="openCancelModal({{ r.pk }})"
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-medium border border-red-200 hover:bg-red-100 transition-colors">
+                                                    <i class="ph ph-prohibit"></i>
+                                                    Отменить
+                                                </button>
+                                            </form>
+                                            {% endif %}
                                         {% elif r.status == 'rejected' %}
                                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-medium border border-red-200">
                                                 <i class="ph ph-x-circle"></i>
@@ -375,6 +397,42 @@
         </section>
 
     </div>
+
+    {# Модальное окно подтверждения отмены #}
+    <div id="cancel-modal" class="fixed inset-0 z-50 hidden" aria-labelledby="cancel-modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-black/40 transition-opacity" onclick="closeCancelModal()"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="relative bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+                    <div class="text-center">
+                        <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-red-100">
+                            <i class="ph ph-warning text-red-600 text-2xl"></i>
+                        </div>
+                        <h3 class="mt-4 font-serif text-xl text-sand-900" id="cancel-modal-title">
+                            Отменить бронирование?
+                        </h3>
+                        <p class="mt-2 text-sm text-sand-500">
+                            Вы уверены, что хотите отменить бронирование?
+                            Это действие нельзя будет отменить.
+                        </p>
+                    </div>
+                    <div class="mt-6 flex gap-3">
+                        <button type="button"
+                                onclick="closeCancelModal()"
+                                class="flex-1 rounded-full bg-sand-100 px-4 py-3 text-sm font-medium text-sand-700 hover:bg-sand-200 transition-colors">
+                            Не отменять
+                        </button>
+                        <button type="button"
+                                id="confirm-cancel-btn"
+                                class="flex-1 rounded-full bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700 transition-colors">
+                            Отменить бронирование
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </main>
 {% endblock %}
 
@@ -442,6 +500,37 @@ document.addEventListener('DOMContentLoaded', function () {
             setEditMode(false);
         });
     });
+});
+
+/* ---------- Cancel reservation modal ---------- */
+let currentCancelForm = null;
+
+function openCancelModal(reservationId) {
+    const form = document.querySelector(`form[action*="${reservationId}"]`);
+    if (!form) return;
+    currentCancelForm = form;
+
+    const modal = document.getElementById('cancel-modal');
+    const confirmBtn = document.getElementById('confirm-cancel-btn');
+    confirmBtn.onclick = function () {
+        if (currentCancelForm) {
+            currentCancelForm.submit();
+        }
+    };
+    modal.classList.remove('hidden');
+}
+
+function closeCancelModal() {
+    const modal = document.getElementById('cancel-modal');
+    modal.classList.add('hidden');
+    currentCancelForm = null;
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        closeCancelModal();
+    }
 });
 </script>
 {% endblock %}

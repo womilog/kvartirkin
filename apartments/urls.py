@@ -9,4 +9,5 @@ urlpatterns = [
     path('booking/success/', views.booking_success, name='booking_success'),
     path('apartment/<slug:slug>/check-availability/', views.check_availability, name='check_availability'),
     path('apartment/<slug:slug>/review/add/', views.add_review, name='add_review'),
+    path('reservation/<int:reservation_id>/cancel/', views.cancel_reservation, name='cancel_reservation'),
 ]

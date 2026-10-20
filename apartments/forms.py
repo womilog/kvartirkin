@@ -48,7 +48,7 @@ class BookingForm(forms.ModelForm):
     )
     check_out = forms.DateField(
         label='Дата выезда',
-        widget=forms.DateInput(attrs={
+        widget=forms.DateInput(format='%d-%m-%Y',attrs={
             'type': 'date',
             'class': 'w-full px-4 py-3 rounded-lg bg-sand-50 border border-sand-200 focus:border-sea-500 focus:ring-2 focus:ring-sea-200 transition-all',
             'lang': 'ru',
