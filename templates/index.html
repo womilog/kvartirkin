@@ -4,6 +4,34 @@
 {% block title %}Квартиркинъ — Посуточная аренда квартир в Воркуте и Геленджике{% endblock %}
 {% block description %}Снять квартиру посуточно в Воркуте или Геленджике без посредников. Полностью оборудованные апартаменты, уборка перед каждым заездом, бронирование напрямую у владельца.{% endblock %}
 
+{% block schema_jsonld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Квартиркинъ",
+  "url": "https://{{ request.get_host }}",
+  "telephone": "+7-912-117-67-77",
+  "email": "hello@kvartirkin.ru",
+  "areaServed": [
+    {"@type": "City", "name": "Воркута"},
+    {"@type": "City", "name": "Геленджик"}
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+7-912-117-67-77",
+    "contactType": "customer service",
+    "availableLanguage": "Russian"
+  },
+  "sameAs": [
+    "https://t.me/kvartirkin_vorkuta",
+    "https://vk.ru/kvartirkinrent",
+    "https://wa.me/79121176777"
+  ]
+}
+</script>
+{% endblock %}
+
 {% block extra_head_scripts %}
     <!-- GSAP для анимаций -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>

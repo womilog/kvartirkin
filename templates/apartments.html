@@ -4,6 +4,18 @@
 {% block title %}Квартиры посуточно в Воркуте и Геленджике — Квартиркинъ{% endblock %}
 {% block description %}Каталог квартир для посуточной аренды в Воркуте и Геленджике: цены за сутки, удобства и актуальная занятость.{% endblock %}
 
+{% block schema_jsonld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Квартиры посуточно — Квартиркинъ",
+  "description": "Каталог квартир для посуточной аренды в Воркуте и Геленджике: цены за сутки, удобства и актуальная занятость.",
+  "url": "https://{{ request.get_host }}{% url 'apartment_list' %}"
+}
+</script>
+{% endblock %}
+
 {% block content %}
 
     <!-- Hero секция -->

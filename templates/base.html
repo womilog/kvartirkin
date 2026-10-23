@@ -6,6 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Квартиркинъ — Посуточная аренда квартир в Воркуте и Геленджике{% endblock %}</title>
     <meta name="description" content="{% block description %}Посуточная аренда квартир в Воркуте и Геленджике без посредников. Чистые, полностью оборудованные апартаменты, бронирование напрямую у владельца.{% endblock %}">
+    <meta name="yandex-verification" content="5182d9f3a341c3da" />
+
+    {% if request.get_full_path %}
+    <link rel="canonical" href="https://{{ request.get_host }}{{ request.get_full_path }}" />
+    {% endif %}
+
+    <!-- Open Graph / VK / Telegram -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}" />
+    <meta property="og:site_name" content="Квартиркинъ" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content="{% block og_title %}Квартиркинъ — Посуточная аренда квартир в Воркуте и Геленджике{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}Посуточная аренда квартир в Воркуте и Геленджике без посредников. Чистые, полностью оборудованные апартаменты, бронирование напрямую у владельца.{% endblock %}" />
+    <meta property="og:url" content="https://{{ request.get_host }}{{ request.get_full_path }}" />
+    <meta property="og:image" content="{% block og_image %}https://{{ request.get_host }}{% static 'img/og-default.jpg' %}{% endblock %}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    {% block schema_jsonld %}{% endblock %}
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>

@@ -4,6 +4,87 @@
 {% block title %}{{ apartment.name }} — посуточно в {% if apartment.city == 'Vorkuta' %}Воркуте{% else %}Геленджике{% endif %} — Квартиркинъ{% endblock %}
 {% block description %}{{ apartment.description|truncatewords:20 }}{% endblock %}
 
+{% block og_type %}website{% endblock %}
+{% block og_title %}{{ apartment.name }} — аренда {% if apartment.city == 'Vorkuta' %}в Воркуте{% else %}в Геленджике{% endif %} посуточно — Квартиркинъ{% endblock %}
+{% block og_description %}{{ apartment.description|truncatewords:20 }} · от {{ apartment.price_per_day|floatformat:0 }} ₽/сутки{% endblock %}
+
+{% block og_image %}{% if images %}https://{{ request.get_host }}{{ images.0.image.url }}{% else %}https://{{ request.get_host }}{% static 'img/og-default.jpg' %}{% endif %}{% endblock %}
+
+{% block schema_jsonld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LodgingBusiness",
+  "name": "{{ apartment.name }}",
+  "description": "{{ apartment.description|truncatewords:40|escapejs }}",
+  "url": "https://{{ request.get_host }}{{ request.get_full_path }}",
+  "telephone": "+7-912-117-67-77",
+  "email": "hello@kvartirkin.ru",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ apartment.address|escapejs }}",
+    "addressLocality": "{{ apartment.get_city_display }}",
+    "addressCountry": "RU"
+  },
+  "priceRange": "{{ apartment.price_per_day|floatformat:0 }} RUB",
+  "amenityFeature": [
+    {% if apartment.has_wifi %}
+    {"@type": "LocationFeatureSpecification", "name": "Wi-Fi", "value": true},
+    {% endif %}
+    {% if apartment.has_smart_tv %}
+    {"@type": "LocationFeatureSpecification", "name": "Smart TV", "value": true},
+    {% endif %}
+    {% if apartment.has_washing_machine %}
+    {"@type": "LocationFeatureSpecification", "name": "Стиральная машина", "value": true},
+    {% endif %}
+    {% if apartment.has_ac %}
+    {"@type": "LocationFeatureSpecification", "name": "Кондиционер", "value": true},
+    {% endif %}
+    {% if apartment.pets_allowed %}
+    {"@type": "LocationFeatureSpecification", "name": "Можно с питомцем", "value": true},
+    {% endif %}
+    {% if apartment.free_private_park %}
+    {"@type": "LocationFeatureSpecification", "name": "Частная парковка", "value": true},
+    {% endif %}
+    {% if apartment.near_pool %}
+    {"@type": "LocationFeatureSpecification", "name": "Бассейн рядом", "value": true},
+    {% endif %}
+    {"@type": "LocationFeatureSpecification", "name": "Кухня", "value": true}
+  ],
+  "numberOfRooms": {{ apartment.rooms }},
+  "floorSize": {
+    "@type": "QuantitativeValue",
+    "value": {{ apartment.area }},
+    "unitCode": "MTK"
+  },
+  "maximumCapacity": {
+    "@type": "QuantitativeValue",
+    "value": {{ apartment.max_guests }}
+  },
+  {% if avg_rating > 0 %}
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ avg_rating }}",
+    "bestRating": "5",
+    "worstRating": "1",
+    "ratingCount": {{ review_count }}
+  },
+  {% endif %}
+  "priceSpecification": {
+    "@type": "PriceSpecification",
+    "price": "{{ apartment.price_per_day|floatformat:0 }}",
+    "priceCurrency": "RUB",
+    "unitCode": "DAY"
+  },
+  "image": [
+    {% for img in images|slice:":6" %}
+    "https://{{ request.get_host }}{{ img.image.url }}"{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
+
 {% block extra_head_scripts %}
     <!-- Yandex Maps -->
     <script src="https://api-maps.yandex.ru/2.1/?apikey=7af99a2d-b8b6-48b4-a97f-ca2a0f71b2aa&lang=ru_RU" type="text/javascript"></script>
