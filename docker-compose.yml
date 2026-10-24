@@ -39,6 +39,8 @@ services:
     volumes:
       # Persist user-uploaded media across rebuilds.
       - ./media:/app/media
+      # Persist collected static files so nginx on the host can serve them.
+      - ./staticfiles_collected:/app/staticfiles_collected
     depends_on:
       db:
         condition: service_healthy
