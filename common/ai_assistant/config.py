@@ -85,7 +85,7 @@ class AssistantSettings:
                 "GIGACHAT_AUTH_URL",
                 "",
             ),
-            verify_ssl='dop/russian_trusted_root_ca.cer',  # False
+            verify_ssl=_env("GIGACHAT_VERIFY_SSL", "0") == "1",
             request_timeout=float(_env("GIGACHAT_TIMEOUT", "30")),
             max_history_messages=int(_env("AI_ASSISTANT_MAX_HISTORY", "8")),
             max_retrieved_apartments=int(_env("AI_ASSISTANT_MAX_RAG_HITS", "4")),
