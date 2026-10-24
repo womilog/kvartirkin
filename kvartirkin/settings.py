@@ -115,7 +115,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'staticfiles' / 'static',
 ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / 'staticfiles_collected'
+
 
 # WhiteNoise storage: compresses static files and adds cache-busting hashes.
 STORAGES = {
